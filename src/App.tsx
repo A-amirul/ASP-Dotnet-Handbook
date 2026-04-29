@@ -328,9 +328,6 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 </div>
               </div>
             )}
-                  ))}
-                </ul>
-              </div>
               <div className="bg-slate-900 text-white p-6 rounded-xl flex flex-col justify-center relative overflow-hidden">
                 <div className="relative z-10">
                   <div className="text-[11px] uppercase text-brand-cyan font-bold mb-2 tracking-widest flex items-center gap-2">
