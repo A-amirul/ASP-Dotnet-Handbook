@@ -320,7 +320,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                   {section.interviewQuestions.map((q: string, i: number) => (
                     <div key={i} className="bg-slate-50 p-3 sm:p-4 rounded-lg border border-slate-100">
                       <p className="text-xs sm:text-sm text-slate-700 font-semibold flex gap-2">
-                        <span className="text-brand-cyan font-black shrink-0">Q{i + 1}:</span> 
+                        <span className="text-brand-cyan font-black shrink-0">Q{i + 1}:</span>
                         <span>{q}</span>
                       </p>
                     </div>
@@ -328,16 +328,15 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 </div>
               </div>
             )}
-              <div className="bg-slate-900 text-white p-6 rounded-xl flex flex-col justify-center relative overflow-hidden">
-                <div className="relative z-10">
-                  <div className="text-[11px] uppercase text-brand-cyan font-bold mb-2 tracking-widest flex items-center gap-2">
-                    <ListChecks size={14} /> Practice Goal
-                  </div>
-                  <p className="text-sm font-medium leading-relaxed italic text-slate-300">{section.practice}</p>
+            <div className="bg-slate-900 text-white p-6 rounded-xl flex flex-col justify-center relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="text-[11px] uppercase text-brand-cyan font-bold mb-2 tracking-widest flex items-center gap-2">
+                  <ListChecks size={14} /> Practice Goal
                 </div>
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <Code2 size={80} />
-                </div>
+                <p className="text-sm font-medium leading-relaxed italic text-slate-300">{section.practice}</p>
+              </div>
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Code2 size={80} />
               </div>
             </div>
           </section>
@@ -348,7 +347,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         <div className="mt-12 sm:mt-16 md:mt-20 bg-slate-900 rounded-lg sm:rounded-2xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-2xl">
           <div className="relative z-10 max-w-3xl">
             <h3 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-              <BookOpen size={18} className="sm:size-6 text-brand-cyan" /> 
+              <BookOpen size={18} className="sm:size-6 text-brand-cyan" />
               <span className="truncate">{data.id === 'codingTasks' ? 'Summary of Tasks' : 'Key Takeaways: ' + data.title}</span>
             </h3>
             <div className="prose prose-invert prose-sm markdown-body text-xs sm:text-sm">
@@ -364,7 +363,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       {data.summary && (
         <footer className="mt-8 sm:mt-12 border-t border-slate-200 pt-6 sm:pt-8 flex flex-col gap-3 sm:gap-4 text-[10px] sm:text-[11px] uppercase tracking-widest text-slate-400">
           <div className="text-center sm:text-left text-slate-500 font-bold italic">
-            <span className="text-brand-cyan font-black mr-2 not-italic">Summary:</span> 
+            <span className="text-brand-cyan font-black mr-2 not-italic">Summary:</span>
             <span className="text-xs sm:text-sm font-normal">{data.summary}</span>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 font-bold text-slate-400">
@@ -498,9 +497,8 @@ const Home = () => {
           <Star size={80} className="sm:size-120" />
         </div>
       </div>
-        <div className="absolute top-0 right-0 p-8 text-brand-cyan opacity-[0.03]">
-          <Star size={120} />
-        </div>
+      <div className="absolute top-0 right-0 p-8 text-brand-cyan opacity-[0.03]">
+        <Star size={120} />
       </div>
     </motion.div>
   );
