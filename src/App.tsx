@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Terminal, 
-  Database, 
-  Globe, 
-  Server, 
-  Code2, 
-  BookOpen, 
-  LayoutDashboard, 
-  ChevronRight, 
-  Menu, 
+import {
+  Terminal,
+  Database,
+  Globe,
+  Server,
+  Code2,
+  BookOpen,
+  LayoutDashboard,
+  ChevronRight,
+  Menu,
   X,
   Layers,
   ShieldCheck,
@@ -37,12 +37,12 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
       id: item.id,
       title: item.title,
       icon: item.id === 'basics' ? ListChecks :
-            item.id === 'csharp' ? Code2 : 
-            item.id === 'aspnet' ? Server : 
-            item.id === 'webapi' ? Globe : 
-            item.id === 'database' ? Database : 
-            item.id === 'frontend' ? Layers : 
-            item.id === 'systemdesign' ? ShieldCheck : Terminal,
+        item.id === 'csharp' ? Code2 :
+          item.id === 'aspnet' ? Server :
+            item.id === 'webapi' ? Globe :
+              item.id === 'database' ? Database :
+                item.id === 'frontend' ? Layers :
+                  item.id === 'systemdesign' ? ShieldCheck : Terminal,
       path: `/${item.id}`
     }))
   ];
@@ -51,8 +51,8 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
     <>
       {/* Mobile Backdrop */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-[#00000080] z-40 lg:hidden" 
+        <div
+          className="fixed inset-0 bg-[#00000080] z-40 lg:hidden"
           onClick={toggle}
         />
       )}
@@ -75,8 +75,8 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
                 onClick={() => { if (window.innerWidth < 1024) toggle(); }}
                 className={cn(
                   "flex items-center gap-3 p-3 transition-all text-sm font-medium rounded-lg",
-                  location.pathname === item.path 
-                    ? "bg-brand-cyan-subtle text-brand-cyan shadow-sm" 
+                  location.pathname === item.path
+                    ? "bg-brand-cyan-subtle text-brand-cyan shadow-sm"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
@@ -113,13 +113,13 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
   const downloadAsPDF = async () => {
     const element = document.getElementById('pdf-content');
     if (!element) return;
-    
+
     setIsDownloading(true);
     try {
       // Force scroll to top of main area to ensure full capture
       const mainElement = element.closest('main');
       if (mainElement) mainElement.scrollTop = 0;
-      
+
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -133,7 +133,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
             el.style.height = 'auto';
             el.style.overflow = 'visible';
             el.style.background = '#f8fafc';
-            
+
             // Remove all box-shadows and oklch-prone styles in clone
             const all = el.getElementsByTagName('*');
             for (let i = 0; i < all.length; i++) {
@@ -148,15 +148,15 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
           }
         }
       });
-      
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
+
       const imgProps = pdf.getImageProperties(imgData);
       const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
+
       let heightLeft = imgHeight;
       let position = 0;
 
@@ -217,7 +217,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       <header className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-6 gap-6">
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-brand-cyan font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
-            <LayoutDashboard size={14} /> 
+            <LayoutDashboard size={14} />
             {data.id === 'tasks' ? 'Full Stack Machine Test' : 'Technical Mastery'}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">{data.title}</h2>
@@ -226,16 +226,16 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         <div className="flex flex-col w-full sm:w-auto gap-4">
           <div className="flex gap-2">
             <div className="relative flex-1 sm:w-64">
-              <input 
-                type="text" 
-                placeholder="Search topics, questions, or code..." 
+              <input
+                type="text"
+                placeholder="Search topics, questions, or code..."
                 className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-lg text-xs focus:border-brand-cyan focus:ring-4 focus:ring-brand-cyan-subtle transition-all outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             </div>
-            <button 
+            <button
               onClick={downloadAsPDF}
               disabled={isDownloading}
               className="h-11 px-4 bg-slate-900 text-white rounded-lg flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors disabled:opacity-50"
@@ -253,7 +253,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
           <section key={idx} className="bg-white p-8 border border-slate-200 rounded-xl relative shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
               <h3 className="text-slate-900 text-2xl font-bold flex items-center gap-3">
-                <span className="w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200"></span> 
+                <span className="w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200"></span>
                 {section.topic}
               </h3>
               <span className="text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-3 py-1 rounded">Module 0{idx + 1}</span>
@@ -265,9 +265,9 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Technical Core</h4>
                   <p className="text-slate-700 leading-relaxed text-sm font-medium">{section.english}</p>
                 </div>
-                
+
                 <div className="bg-brand-cyan-subtle p-5 rounded-lg border-l-4 border-brand-cyan italic text-slate-800 text-sm font-medium">
-                  <span className="font-bold text-brand-cyan mr-2 not-italic">বাংলা ব্যাখ্যা:</span> 
+                  <span className="font-bold text-brand-cyan mr-2 not-italic">বাংলা ব্যাখ্যা:</span>
                   {section.bangla}
                 </div>
 
@@ -405,7 +405,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tight">{task.title}</h3>
                 <span className="text-[10px] font-bold font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded">Task_{idx.toString().padStart(2, '0')}</span>
               </div>
-              
+
               <div className="grid lg:grid-cols-2 gap-8 mb-8">
                 <div className="space-y-4">
                   <div>
@@ -419,7 +419,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 </div>
 
                 <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-inner overflow-hidden relative">
-                   <div className="flex justify-between items-center mb-3 text-[9px] text-slate-500 border-b border-slate-800 pb-2 font-bold uppercase tracking-widest">
+                  <div className="flex justify-between items-center mb-3 text-[9px] text-slate-500 border-b border-slate-800 pb-2 font-bold uppercase tracking-widest">
                     <span>Clean Solution</span>
                     <span>C# Logic</span>
                   </div>
@@ -447,15 +447,15 @@ const Home = () => {
         <div className="relative z-10">
           <div className="text-indigo-100 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 font-bold">Expert Level Guide</div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 md:mb-8 tracking-tighter leading-[1.1]">
-             <br className="hidden sm:block" />
+            <br className="hidden sm:block" />
             <span className="text-slate-900 italic font-black">DOTNET ARCHITECT</span>
           </h1>
           <p className="text-base md:text-lg text-indigo-50 mb-10 md:mb-12 max-w-2xl font-bold leading-relaxed opacity-90">
             A specialized handbook for professionals targeting 5+ years seniority. Master the core internals, design patterns, and system architecture questions that top firms demand.
           </p>
           <div className="flex flex-wrap gap-4 mb-10">
-            <button 
-              onClick={() => window.print()} 
+            <button
+              onClick={() => window.print()}
               className="bg-white text-brand-cyan px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-lg"
             >
               <Download size={16} /> Print Full Guide
@@ -492,8 +492,8 @@ const Home = () => {
             { step: 5, id: 'tasks', title: 'Machine Tasks', desc: 'Real-world coding challenges and design patterns.' },
             { step: 6, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
           ].map((item) => (
-            <Link 
-              key={item.step} 
+            <Link
+              key={item.step}
               to={`/${item.id}`}
               className="group bg-white p-8 border border-slate-200 hover:border-brand-cyan transition-all rounded-xl relative overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 block"
             >
@@ -527,7 +527,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
   return (
     <nav className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-6 sticky top-0 z-40">
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={onMenuClick}
           className="lg:hidden p-2 text-brand-cyan hover:bg-indigo-50 rounded-lg transition-colors"
         >
@@ -535,7 +535,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
         </button>
         <div className="hidden lg:flex items-center gap-2 text-brand-cyan text-sm font-bold tracking-tight">
           <Terminal size={18} />
-          <span className="uppercase tracking-[0.1em]"> Dotnet Architect Mastery</span>
+          <span className="uppercase tracking-widest"> Dotnet Architect Mastery</span>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -571,10 +571,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-screen flex overflow-hidden bg-brand-bg relative w-full">
       <Sidebar isOpen={sidebarOpen} toggle={() => setSidebarOpen(false)} />
-      
+
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
-        
+
         <main className="flex-1 overflow-y-auto custom-scrollbar relative bg-slate-50">
           <div className="px-5 py-8 md:px-12 md:py-12">
             <AnimatePresence mode="wait">
@@ -596,25 +596,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <div className="border-t border-slate-100 pt-6">
                 <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-6">
                   <p className="text-slate-500 text-xs font-medium">All rights reserved © Md Amirul Islam</p>
-                  
+
                   <div className="flex items-center gap-6">
-                    <a 
-                      href="https://amirul-islam-portfolio.vercel.app" 
-                      target="_blank" 
+                    <a
+                      href="https://amirul-islam-portfolio.vercel.app"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
                     >
                       <span>Portfolio</span>
                     </a>
-                    
-                    <a 
-                      href="https://linkedin.com/in/md-amirul-islam-518a2b261" 
-                      target="_blank" 
+
+                    <a
+                      href="https://linkedin.com/in/md-amirul-islam-518a2b261"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
                       </svg>
                       <span>LinkedIn</span>
                     </a>
@@ -636,10 +636,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           {handbookData.map((item) => (
-            <Route 
-              key={item.id} 
-              path={`/${item.id}`} 
-              element={<SectionRenderer data={item} />} 
+            <Route
+              key={item.id}
+              path={`/${item.id}`}
+              element={<SectionRenderer data={item} />}
             />
           ))}
         </Routes>
