@@ -262,6 +262,77 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-slate-200 rounded-full hover:bg-slate-300;
   }
+
+  /* Mobile responsive utilities */
+  @media (max-width: 640px) {
+    .mobile-hidden {
+      @apply hidden;
+    }
+    
+    .mobile-full-width {
+      @apply w-full;
+    }
+    
+    .mobile-px {
+      @apply px-4;
+    }
+    
+    .mobile-py {
+      @apply py-3;
+    }
+    
+    .mobile-text-sm {
+      @apply text-sm;
+    }
+    
+    .mobile-gap-2 {
+      @apply gap-2;
+    }
+    
+    .mobile-flex-col {
+      @apply flex-col;
+    }
+    
+    .mobile-grid-cols-1 {
+      @apply grid-cols-1;
+    }
+    
+    .mobile-text-base {
+      @apply text-base;
+    }
+    
+    .mobile-h-auto {
+      @apply h-auto;
+    }
+    
+    .mobile-max-h-none {
+      @apply max-h-none;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .tablet-hidden {
+      @apply hidden;
+    }
+    
+    .tablet-grid-cols-2 {
+      @apply grid-cols-2;
+    }
+    
+    .tablet-px {
+      @apply px-6;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .desktop-grid-cols-3 {
+      @apply grid-cols-3;
+    }
+    
+    .desktop-hidden {
+      @apply hidden;
+    }
+  }
 }
 
 @layer base {
