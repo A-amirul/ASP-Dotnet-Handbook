@@ -58,10 +58,16 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
       )}
 
       <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-50 w-72 bg-brand-sidebar flex flex-col border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 h-full shadow-sm",
+        "fixed lg:static inset-y-0 left-0 z-50 w-72 bg-brand-sidebar flex flex-col border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0 h-full shadow-xl lg:shadow-sm",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative">
+          <button 
+            onClick={toggle}
+            className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full"
+          >
+            <X size={16} />
+          </button>
           <div className="p-6 bg-slate-subtle border-b border-slate-100 text-center">
             <h1 className="font-bold text-brand-cyan text-xl tracking-tighter">DOTNET </h1>
             <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Interview Handbook</p>
@@ -120,16 +126,19 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       const mainElement = element.closest('main');
       if (mainElement) mainElement.scrollTop = 0;
 
+      const targetWidth = Math.max(element.scrollWidth, 1024);
+
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#f8fafc',
-        width: element.offsetWidth,
-        height: element.offsetHeight,
+        width: targetWidth,
+        windowWidth: targetWidth,
         onclone: (clonedDoc) => {
           const el = clonedDoc.getElementById('pdf-content');
           if (el) {
+            el.style.width = `${targetWidth}px`;
             el.style.height = 'auto';
             el.style.overflow = 'visible';
             el.style.background = '#f8fafc';
@@ -137,11 +146,28 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
             // Remove all box-shadows and oklch-prone styles in clone
             const all = el.getElementsByTagName('*');
             for (let i = 0; i < all.length; i++) {
-              const s = (all[i] as HTMLElement).style;
+              const elNode = all[i] as HTMLElement;
+              const s = elNode.style;
               if (s) {
                 s.boxShadow = 'none';
                 s.textShadow = 'none';
                 s.backdropFilter = 'none';
+                
+                // Fix for scrollable elements inside PDF
+                if (elNode.tagName === 'PRE') {
+                  s.whiteSpace = 'pre-wrap';
+                  s.overflowX = 'visible';
+                }
+                if (
+                  elNode.tagName === 'TABLE' || 
+                  elNode.classList.contains('overflow-x-auto') || 
+                  elNode.classList.contains('overflow-hidden') ||
+                  elNode.classList.contains('custom-scrollbar')
+                ) {
+                  s.overflow = 'visible';
+                  s.overflowX = 'visible';
+                  s.overflowY = 'visible';
+                }
                 // If opacity is very low, make it visible or just keep as is
               }
             }
@@ -220,8 +246,8 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
             <LayoutDashboard size={14} />
             {data.id === 'tasks' ? 'Full Stack Machine Test' : 'Technical Mastery'}
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">{data.title}</h2>
-          <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-xl">{data.description}</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">{data.title}</h2>
+          <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed max-w-xl">{data.description}</p>
         </div>
         <div className="flex flex-col w-full sm:w-auto gap-4">
           <div className="flex gap-2">
@@ -248,18 +274,18 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         </div>
       </header>
 
-      <div id="pdf-content" className="grid gap-12 bg-slate-subtle p-4 -m-4 rounded-xl">
+      <div id="pdf-content" className="grid gap-6 md:gap-12 bg-slate-subtle p-3 sm:p-4 -mx-4 sm:mx-0 rounded-none sm:rounded-xl">
         {data.sections?.map((section: any, idx: number) => (
-          <section key={idx} className="bg-white p-8 border border-slate-200 rounded-xl relative shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
-              <h3 className="text-slate-900 text-2xl font-bold flex items-center gap-3">
-                <span className="w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200"></span>
+          <section key={idx} className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl relative shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 border-b border-slate-100 pb-4 gap-3">
+              <h3 className="text-slate-900 text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3 leading-snug">
+                <span className="min-w-3 min-h-3 w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200 shrink-0"></span>
                 {section.topic}
               </h3>
-              <span className="text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-3 py-1 rounded">Module 0{idx + 1}</span>
+              <span className="text-[10px] sm:text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-2 sm:px-3 py-1 rounded w-fit">Module 0{idx + 1}</span>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-10 mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 mb-8 sm:mb-10">
               <div className="space-y-6">
                 <div>
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Technical Core</h4>
@@ -273,7 +299,18 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
 
                 {section.details && (
                   <div className="prose prose-sm prose-slate max-w-none mt-4 markdown-body">
-                    <Markdown remarkPlugins={[remarkGfm]}>{section.details}</Markdown>
+                    <Markdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        table: ({node, ...props}) => (
+                          <div className="overflow-x-auto w-full max-w-full pb-2 mb-4 custom-scrollbar">
+                            <table className="min-w-[600px] w-full" {...props} />
+                          </div>
+                        )
+                      }}
+                    >
+                      {section.details}
+                    </Markdown>
                   </div>
                 )}
               </div>
@@ -367,13 +404,24 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       </div>
 
       {data.revisionSummary && (
-        <div className="mt-20 bg-slate-900 rounded-2xl p-10 text-white relative overflow-hidden shadow-2xl">
+        <div className="mt-12 md:mt-20 bg-slate-900 rounded-2xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-2xl">
           <div className="relative z-10 max-w-3xl">
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
               <BookOpen className="text-brand-cyan" /> {data.id === 'codingTasks' ? 'Summary of Tasks' : 'Revision Summary: ' + data.title}
             </h3>
             <div className="prose prose-invert prose-sm markdown-body">
-              <Markdown remarkPlugins={[remarkGfm]}>{data.revisionSummary}</Markdown>
+              <Markdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  table: ({node, ...props}) => (
+                    <div className="overflow-x-auto w-full max-w-full pb-2 mb-4 custom-scrollbar">
+                      <table className="min-w-[600px] w-full" {...props} />
+                    </div>
+                  )
+                }}
+              >
+                {data.revisionSummary}
+              </Markdown>
             </div>
           </div>
           <div className="absolute -bottom-20 -right-20 opacity-5">
@@ -395,18 +443,18 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       )}
 
       {data.tasks && (
-        <div className="grid gap-8 pt-10">
-          <h2 className="text-2xl font-bold text-slate-900 border-b-2 border-slate-100 pb-4 flex items-center gap-3">
-            <Terminal size={24} className="text-brand-cyan" /> Practical Machine Tests
+        <div className="grid gap-6 sm:gap-8 pt-8 sm:pt-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 border-b-2 border-slate-100 pb-4 flex items-center gap-2 sm:gap-3">
+            <Terminal size={20} className="text-brand-cyan sm:w-6 sm:h-6" /> Practical Machine Tests
           </h2>
           {data.tasks.map((task: any, idx: number) => (
-            <div key={idx} className="bg-white p-8 border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tight">{task.title}</h3>
-                <span className="text-[10px] font-bold font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded">Task_{idx.toString().padStart(2, '0')}</span>
+            <div key={idx} className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 uppercase tracking-tight">{task.title}</h3>
+                <span className="text-[10px] font-bold font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded w-fit">Task_{idx.toString().padStart(2, '0')}</span>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-8 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <div className="space-y-4">
                   <div>
                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Challenge Objective</h4>
@@ -441,12 +489,12 @@ const Home = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-5xl mx-auto py-8 md:py-12"
+      className="max-w-5xl mx-auto py-4 sm:py-8 md:py-12"
     >
-      <section className="relative rounded-3xl overflow-hidden bg-brand-cyan text-white p-8 md:p-16 mb-16 md:mb-20 shadow-xl shadow-indigo-200">
+      <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-brand-cyan text-white p-6 sm:p-8 md:p-16 mb-10 sm:mb-16 md:mb-20 shadow-xl shadow-indigo-200">
         <div className="relative z-10">
-          <div className="text-indigo-100 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 font-bold">Expert Level Guide</div>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 md:mb-8 tracking-tighter leading-[1.1]">
+          <div className="text-indigo-100 font-mono text-[9px] sm:text-[10px] md:text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-4 font-bold">Expert Level Guide</div>
+          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 sm:mb-6 md:mb-8 tracking-tighter leading-[1.1]">
             <br className="hidden sm:block" />
             <span className="text-slate-900 italic font-black">DOTNET ARCHITECT</span>
           </h1>
@@ -495,9 +543,9 @@ const Home = () => {
             <Link
               key={item.step}
               to={`/${item.id}`}
-              className="group bg-white p-8 border border-slate-200 hover:border-brand-cyan transition-all rounded-xl relative overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 block"
+              className="group bg-white p-6 sm:p-8 border border-slate-200 hover:border-brand-cyan transition-all rounded-xl relative overflow-hidden shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 block"
             >
-              <span className="text-6xl font-black text-slate-50 group-hover:text-indigo-100 transition-colors absolute -top-4 -right-4 italic">{item.step.toString().padStart(2, '0')}</span>
+              <span className="text-5xl sm:text-6xl font-black text-slate-50 group-hover:text-indigo-100 transition-colors absolute -top-4 -right-4 italic">{item.step.toString().padStart(2, '0')}</span>
               <h3 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-widest relative z-10 group-hover:text-brand-cyan transition-colors">{item.title}</h3>
               <p className="text-slate-500 text-xs leading-relaxed relative z-10 font-medium group-hover:text-slate-700 transition-colors">{item.desc}</p>
               <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-brand-cyan opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
@@ -508,15 +556,15 @@ const Home = () => {
         </div>
       </section>
 
-      <div className="mt-24 p-10 bg-indigo-50 border border-indigo-100 rounded-2xl relative overflow-hidden">
+      <div className="mt-16 sm:mt-24 p-6 sm:p-10 bg-indigo-50 border border-indigo-100 rounded-2xl relative overflow-hidden">
         <div className="relative z-10">
-          <p className="text-xl text-indigo-900 leading-relaxed font-medium italic mb-2">
+          <p className="text-lg sm:text-xl text-indigo-900 leading-relaxed font-medium italic mb-2">
             "ইন্টারভিউতে শুধুমাত্র কোড জানা যথেষ্ট নয়, আপনার ডিসিশন মেকিং ক্ষমতা এবং প্রবলেম সলভিং অ্যাপ্রোচ যাচাই করা হয়। এই হ্যান্ডবুকটি আপনাকে সেই লেভেলের থিঙ্কিং শিখতে সাহায্য করবে।"
           </p>
-          <div className="text-[10px] uppercase tracking-widest text-brand-cyan font-black mt-4">— Technical Lead, Handbook Author</div>
+          <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-brand-cyan font-black mt-4">— Technical Lead, Handbook Author</div>
         </div>
-        <div className="absolute top-0 right-0 p-8 text-brand-cyan opacity-[0.03]">
-          <Star size={120} />
+        <div className="absolute top-0 right-0 p-4 sm:p-8 text-brand-cyan opacity-[0.03]">
+          <Star className="w-20 h-20 sm:w-32 sm:h-32" />
         </div>
       </div>
     </motion.div>
@@ -538,22 +586,23 @@ const Navbar = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <span className="uppercase tracking-widest"> Dotnet Architect Mastery</span>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="hidden md:flex -space-x-2 mr-4">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden md:flex -space-x-2 mr-2 sm:mr-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
+            <div key={i} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[9px] sm:text-[10px] font-bold text-slate-400">
               {String.fromCharCode(64 + i)}
             </div>
           ))}
-          <div className="w-7 h-7 rounded-full border-2 border-white bg-brand-cyan text-white flex items-center justify-center text-[10px] font-bold">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-white bg-brand-cyan text-white flex items-center justify-center text-[9px] sm:text-[10px] font-bold">
             +
           </div>
         </div>
-        <button className="h-9 px-4 bg-slate-50 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors border border-slate-200">
+        <button className="hidden sm:block h-8 sm:h-9 px-3 sm:px-4 bg-slate-50 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors border border-slate-200">
           Docs
         </button>
-        <button className="h-9 px-4 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
-          Hire Expert
+        <button className="h-8 sm:h-9 px-3 sm:px-4 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
+          <span className="hidden xs:inline">Hire Expert</span>
+          <span className="xs:hidden">Hire</span>
         </button>
       </div>
     </nav>
@@ -594,12 +643,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   All rights reserved by © Md Amirul Islam
                 </a>
 
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-4 sm:mt-0">
                   <a
                     href="https://amirul-islam-portfolio.vercel.app"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
+                    className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-105 flex items-center gap-2 text-sm font-medium"
                   >
                     <span>Portfolio</span>
                   </a>
