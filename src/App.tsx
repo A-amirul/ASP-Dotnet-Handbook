@@ -584,41 +584,37 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
           <footer className="px-6 py-10 md:py-12 md:px-12 border-t border-slate-100 bg-white mt-auto">
             <div className="max-w-5xl mx-auto">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-8 mb-8">
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest text-center sm:text-left leading-relaxed">© 2026 Senior .NET Architect Mastery.<br className="sm:hidden" /> Pro-Level Resource.</p>
-                <div className="flex gap-10">
-                  <a href="#" className="text-slate-300 hover:text-brand-cyan transition-all transform hover:scale-110"><Globe size={20} /></a>
-                  <a href="#" className="text-slate-300 hover:text-brand-cyan transition-all transform hover:scale-110"><Terminal size={20} /></a>
-                  <a href="#" className="text-slate-300 hover:text-brand-cyan transition-all transform hover:scale-110"><Code2 size={20} /></a>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-100 pt-6">
-                <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-6">
-                  <p className="text-slate-500 text-xs font-medium">All rights reserved © Md Amirul Islam</p>
-
-                  <div className="flex items-center gap-6">
-                    <a
-                      href="https://amirul-islam-portfolio.vercel.app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
-                    >
-                      <span>Portfolio</span>
-                    </a>
-
-                    <a
-                      href="https://linkedin.com/in/md-amirul-islam-518a2b261"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
-                      </svg>
-                      <span>LinkedIn</span>
-                    </a>
-                  </div>
+              <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-6">
+                <a 
+                  href="https://amirul-islam-portfolio.vercel.app" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 text-xs font-medium"
+                >
+                  All rights reserved © Md Amirul Islam
+                </a>
+                
+                <div className="flex items-center gap-6">
+                  <a 
+                    href="https://amirul-islam-portfolio.vercel.app" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
+                  >
+                    <span>Portfolio</span>
+                  </a>
+                  
+                  <a 
+                    href="https://linkedin.com/in/md-amirul-islam-518a2b261" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-slate-500 hover:text-brand-cyan transition-all transform hover:scale-110 flex items-center gap-2 text-sm font-medium"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                    </svg>
+                    <span>LinkedIn</span>
+                  </a>
                 </div>
               </div>
             </div>
