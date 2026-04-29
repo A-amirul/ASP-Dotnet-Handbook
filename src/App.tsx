@@ -448,7 +448,7 @@ const Home = () => {
           <div className="text-indigo-100 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 font-bold">Expert Level Guide</div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 md:mb-8 tracking-tighter leading-[1.1]">
              <br className="hidden sm:block" />
-            <span className="text-slate-900 italic font-black">DOTNET ARCHITECT</span>
+            <span className="text-slate-900 italic font-black">DOTNET ARCHITECT </span>
           </h1>
           <p className="text-base md:text-lg text-indigo-50 mb-10 md:mb-12 max-w-2xl font-bold leading-relaxed opacity-90">
             A specialized handbook for professionals targeting 5+ years seniority. Master the core internals, design patterns, and system architecture questions that top firms demand.
