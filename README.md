@@ -1,6 +1,4 @@
 <div align="center">
-<img width="1200" height="475" alt="ASP.NET Handbook Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
 # ASP.NET Interview Handbook - Senior Developer Guide
 
@@ -8,7 +6,6 @@ A comprehensive, interactive learning platform for mastering ASP.NET and C# for 
 
 **Current Version:** 2.4 | Senior Edition  
 **Last Updated:** 2026  
-**Edition:** Interactive & AI-Enhanced
 
 ---
 
