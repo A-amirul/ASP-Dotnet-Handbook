@@ -1,6 +1,7 @@
 import { csharpData } from './csharp';
 import { basicsData } from './basics';
 import { aspnetData } from './aspnet';
+import { mvcoreData } from './mvcore';
 import { webapiData } from './webapi';
 import { databaseData } from './database';
 import { frontendData, systemDesignData, devopsData } from './advanced';
@@ -10,6 +11,7 @@ export const handbookData = [
   { id: 'basics', ...basicsData },
   { id: 'csharp', ...csharpData },
   { id: 'aspnet', ...aspnetData },
+  { id: 'mvcore', ...mvcoreData },
   { id: 'webapi', ...webapiData },
   { id: 'database', ...databaseData },
   { id: 'frontend', ...frontendData },
@@ -18,4 +20,4 @@ export const handbookData = [
   { id: 'tasks', ...codingTasks },
 ];
 
-export { basicsData, csharpData, aspnetData, webapiData, databaseData, frontendData, systemDesignData, devopsData, codingTasks };
+export { basicsData, csharpData, aspnetData, mvcoreData, webapiData, databaseData, frontendData, systemDesignData, devopsData, codingTasks };

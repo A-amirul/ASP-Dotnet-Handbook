@@ -535,10 +535,11 @@ const Home = () => {
           {[
             { step: 1, id: 'csharp', title: 'Adv. C# Mastery', desc: 'Internal workings, memory management & async patterns.' },
             { step: 2, id: 'aspnet', title: 'ASP.NET Architecture', desc: 'Middleware, Request lifecycle & Security pipelines.' },
-            { step: 3, id: 'database', title: 'Data Infrastructure', desc: 'Optimization, EF Core internals & Query tuning.' },
-            { step: 4, id: 'systemdesign', title: 'System Design', desc: 'Microservices, Scalability & Cloud Architecture.' },
-            { step: 5, id: 'tasks', title: 'Machine Tasks', desc: 'Real-world coding challenges and design patterns.' },
-            { step: 6, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
+            { step: 3, id: 'mvcore', title: 'MVC / Core Interview', desc: 'Lifecycle, filters, auth, CORS, logging, and versioning strategy.' },
+            { step: 4, id: 'database', title: 'Data Infrastructure', desc: 'Optimization, EF Core internals & Query tuning.' },
+            { step: 5, id: 'systemdesign', title: 'System Design', desc: 'Microservices, Scalability & Cloud Architecture.' },
+            { step: 6, id: 'tasks', title: 'Machine Tasks', desc: 'Real-world coding challenges and design patterns.' },
+            { step: 7, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
           ].map((item) => (
             <Link
               key={item.step}
