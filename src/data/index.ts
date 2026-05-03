@@ -6,9 +6,11 @@ import { webapiData } from './webapi';
 import { databaseData } from './database';
 import { frontendData, systemDesignData, devopsData } from './advanced';
 import { codingTasks } from './codingTasks';
+import { apiDocsContent } from './apidocs';
 
 export const handbookData = [
   { id: 'basics', ...basicsData },
+  { ...apiDocsContent },
   { id: 'csharp', ...csharpData },
   { id: 'aspnet', ...aspnetData },
   { id: 'mvcore', ...mvcoreData },
@@ -20,4 +22,4 @@ export const handbookData = [
   { id: 'tasks', ...codingTasks },
 ];
 
-export { basicsData, csharpData, aspnetData, mvcoreData, webapiData, databaseData, frontendData, systemDesignData, devopsData, codingTasks };
+export { basicsData, csharpData, aspnetData, mvcoreData,apiDocsContent, webapiData, databaseData, frontendData, systemDesignData, devopsData, codingTasks };

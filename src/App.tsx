@@ -39,6 +39,7 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
       icon: item.id === 'basics' ? ListChecks :
         item.id === 'csharp' ? Code2 :
           item.id === 'aspnet' ? Server :
+          item.id === 'apidocs' ? BookOpen :
             item.id === 'webapi' ? Globe :
               item.id === 'database' ? Database :
                 item.id === 'frontend' ? Layers :
@@ -222,13 +223,21 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       };
     }
 
+    const sectionMatches = (s: any) => {
+      const topic = (s.topic ?? s.title ?? '').toLowerCase();
+      const english = (s.english ?? s.content ?? '').toLowerCase();
+      const bangla = (s.bangla ?? '').toLowerCase();
+      const subHay = (s.subsections ?? [])
+        .map((sub: any) => `${sub.title ?? ''} ${sub.code ?? ''}`.toLowerCase())
+        .join(' ');
+      const tipsHay = (s.tips ?? []).join(' ').toLowerCase();
+      const blob = `${topic} ${english} ${bangla} ${subHay} ${tipsHay}`;
+      return blob.includes(query);
+    };
+
     return {
       ...initialData,
-      sections: initialData.sections.filter((s: any) =>
-        s.topic.toLowerCase().includes(query) ||
-        s.english.toLowerCase().includes(query) ||
-        s.bangla.toLowerCase().includes(query)
-      )
+      sections: initialData.sections.filter(sectionMatches)
     };
   }, [initialData, searchQuery]);
 
@@ -275,12 +284,19 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       </header>
 
       <div id="pdf-content" className="grid gap-6 md:gap-12 bg-slate-subtle p-3 sm:p-4 -mx-4 sm:mx-0 rounded-none sm:rounded-xl">
-        {data.sections?.map((section: any, idx: number) => (
-          <section key={idx} className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl relative shadow-sm hover:shadow-md transition-shadow">
+        {data.sections?.map((section: any, idx: number) => {
+          const sectionTitle = section.topic ?? section.title;
+          const sectionEnglish = section.english ?? section.content;
+          const sectionBangla = section.bangla;
+          const hasInterviewFooter =
+            (section.interviewQs?.length ?? 0) > 0 || Boolean(section.practice);
+
+          return (
+          <section key={section.id ?? idx} className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl relative shadow-sm hover:shadow-md transition-shadow">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 border-b border-slate-100 pb-4 gap-3">
               <h3 className="text-slate-900 text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3 leading-snug">
                 <span className="min-w-3 min-h-3 w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200 shrink-0"></span>
-                {section.topic}
+                {sectionTitle}
               </h3>
               <span className="text-[10px] sm:text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-2 sm:px-3 py-1 rounded w-fit">Module 0{idx + 1}</span>
             </div>
@@ -289,13 +305,15 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
               <div className="space-y-6">
                 <div>
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Technical Core</h4>
-                  <p className="text-slate-700 leading-relaxed text-sm font-medium">{section.english}</p>
+                  <p className="text-slate-700 leading-relaxed text-sm font-medium">{sectionEnglish}</p>
                 </div>
 
+                {sectionBangla ? (
                 <div className="bg-brand-cyan-subtle p-5 rounded-lg border-l-4 border-brand-cyan italic text-slate-800 text-sm font-medium">
                   <span className="font-bold text-brand-cyan mr-2 not-italic">বাংলা ব্যাখ্যা:</span>
-                  {section.bangla}
+                  {sectionBangla}
                 </div>
+                ) : null}
 
                 {section.details && (
                   <div className="prose prose-sm prose-slate max-w-none mt-4 markdown-body">
@@ -327,6 +345,24 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                     </pre>
                   </div>
                 )}
+                {!section.code && section.subsections?.length ? (
+                  <div className="space-y-4">
+                    {section.subsections.map((sub: any, si: number) => (
+                      <div
+                        key={si}
+                        className="bg-slate-900 rounded-xl border border-slate-800 p-5 font-mono text-[13px] overflow-hidden relative shadow-lg"
+                      >
+                        <div className="flex justify-between items-center mb-3 text-[10px] text-slate-500 border-b border-slate-800 pb-2 font-bold uppercase tracking-wider">
+                          <span>{sub.title}</span>
+                          <span>C# / .NET SDK</span>
+                        </div>
+                        <pre className="text-indigo-300 leading-relaxed overflow-x-auto">
+                          <code>{sub.code}</code>
+                        </pre>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
                 {section.sql && (
                   <div className="bg-slate-800 rounded-xl border border-slate-700 p-5 font-mono text-[13px] overflow-hidden relative shadow-lg">
                     <div className="flex justify-between items-center mb-3 text-[10px] text-slate-400 border-b border-slate-700 pb-2 font-bold uppercase tracking-wider">
@@ -341,7 +377,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
               </div>
             </div>
 
-            {(section.commonMistakes || section.bestPractices) && (
+            {(section.commonMistakes || section.bestPractices || section.tips?.length) && (
               <div className="grid md:grid-cols-2 gap-6 mb-10">
                 {section.commonMistakes && (
                   <div className="bg-red-subtle p-6 rounded-xl border border-red-100">
@@ -357,13 +393,13 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                     </ul>
                   </div>
                 )}
-                {section.bestPractices && (
+                {(section.bestPractices || section.tips?.length) && (
                   <div className="bg-emerald-subtle p-6 rounded-xl border border-emerald-100">
                     <h4 className="text-[11px] font-bold text-emerald-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <CheckCircle2 size={14} /> Best Practices
+                      <CheckCircle2 size={14} /> {section.bestPractices ? 'Best Practices' : 'Key tips'}
                     </h4>
                     <ul className="space-y-3">
-                      {section.bestPractices.map((b: string, i: number) => (
+                      {(section.bestPractices ?? section.tips ?? []).map((b: string, i: number) => (
                         <li key={i} className="text-xs text-emerald-900 font-medium flex gap-2">
                           <span className="text-emerald-400">✓</span> {b}
                         </li>
@@ -374,13 +410,14 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
               </div>
             )}
 
+            {hasInterviewFooter ? (
             <div className="grid md:grid-cols-2 gap-6 pt-8 border-t border-slate-100">
               <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
                 <h4 className="text-[11px] font-bold text-brand-cyan uppercase tracking-widest mb-4 flex items-center gap-2">
                   <Star size={14} className="fill-brand-cyan text-brand-cyan" /> Interview focus
                 </h4>
                 <ul className="space-y-3">
-                  {section.interviewQs.map((q: string, i: number) => (
+                  {section.interviewQs?.map((q: string, i: number) => (
                     <li key={i} className="text-xs text-slate-700 font-semibold flex gap-3">
                       <span className="text-brand-cyan font-black">Q:</span> {q}
                     </li>
@@ -399,9 +436,27 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 </div>
               </div>
             </div>
+            ) : null}
           </section>
-        ))}
+          );
+        })}
       </div>
+
+      {data.interviewQuestions?.length ? (
+        <div className="mt-12 bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <Star className="text-brand-cyan fill-brand-cyan" size={18} /> Module interview questions
+          </h3>
+          <ul className="space-y-3">
+            {data.interviewQuestions.map((q: string, i: number) => (
+              <li key={i} className="text-sm text-slate-700 font-semibold flex gap-3">
+                <span className="text-brand-cyan font-black tabular-nums">{i + 1}.</span>
+                {q}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {data.revisionSummary && (
         <div className="mt-12 md:mt-20 bg-slate-900 rounded-2xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-2xl">
@@ -442,15 +497,15 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         </footer>
       )}
 
-      {data.tasks && (
+      {data?.tasks && (
         <div className="grid gap-6 sm:gap-8 pt-8 sm:pt-10">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 border-b-2 border-slate-100 pb-4 flex items-center gap-2 sm:gap-3">
             <Terminal size={20} className="text-brand-cyan sm:w-6 sm:h-6" /> Practical Machine Tests
           </h2>
-          {data.tasks.map((task: any, idx: number) => (
+          {data?.tasks?.map((task: any, idx: number) => (
             <div key={idx} className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 uppercase tracking-tight">{task.title}</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 uppercase tracking-tight">{task?.title}</h3>
                 <span className="text-[10px] font-bold font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded w-fit">Task_{idx.toString().padStart(2, '0')}</span>
               </div>
 
@@ -458,11 +513,11 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 <div className="space-y-4">
                   <div>
                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Challenge Objective</h4>
-                    <p className="text-slate-700 text-sm font-medium leading-relaxed">{task.english}</p>
+                    <p className="text-slate-700 text-sm font-medium leading-relaxed">{task?.english}</p>
                   </div>
                   <div className="bg-brand-cyan-subtle p-4 rounded-lg border-l-4 border-brand-cyan text-slate-800 text-xs font-medium">
                     <span className="font-bold text-brand-cyan mr-2">বাংলা সারসংক্ষেপ:</span>
-                    {task.bangla}
+                    {task?.bangla}
                   </div>
                 </div>
 
@@ -472,7 +527,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                     <span>C# Logic</span>
                   </div>
                   <pre className="text-[13px] font-mono text-emerald-400 leading-relaxed overflow-x-auto">
-                    <code>{task.code}</code>
+                    <code>{task?.code}</code>
                   </pre>
                 </div>
               </div>
@@ -539,7 +594,8 @@ const Home = () => {
             { step: 4, id: 'database', title: 'Data Infrastructure', desc: 'Optimization, EF Core internals & Query tuning.' },
             { step: 5, id: 'systemdesign', title: 'System Design', desc: 'Microservices, Scalability & Cloud Architecture.' },
             { step: 6, id: 'tasks', title: 'Machine Tasks', desc: 'Real-world coding challenges and design patterns.' },
-            { step: 7, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
+            { step: 7, id: 'apidocs', title: 'API Design & Documentation', desc: 'Design clean, well-documented REST and GraphQL APIs.' },
+            { step: 8, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
           ].map((item) => (
             <Link
               key={item.step}
