@@ -315,11 +315,35 @@ public class UsersController : ControllerBase
     },
   ],
   interviewQuestions: [
-    'What are the principles of RESTful API design?',
-    'When should you use different HTTP status codes?',
-    'How do you handle API versioning?',
-    'What is the purpose of Swagger/OpenAPI?',
-    'How would you implement rate limiting?',
-    'What is the best error response format?',
+    {
+      q: 'What are the principles of RESTful API design?',
+      a: "REST has six architectural constraints: stateless (each request contains all context — no server-side session), client-server separation (UI and data storage concerns are decoupled), uniform interface (resources addressed by URI, manipulated via standard HTTP verbs, self-descriptive messages), layered system (clients cannot tell if they're talking to origin or intermediary), cacheable (responses declare their cacheability), and optionally code-on-demand (server can send executable code). In practice: use resource nouns not action verbs, map CRUD to GET/POST/PUT/PATCH/DELETE, return consistent error shapes, version your contract, and use HTTP status codes semantically rather than always returning 200.",
+      bangla: "URL noun হবে (resource এর নাম), action HTTP method এ express হবে — Stateless, Cacheable, Uniform Interface এই তিনটি সবচেয়ে গুরুত্বপূর্ণ।"
+    },
+    {
+      q: 'When should you use different HTTP status codes?',
+      a: "2xx success: 200 OK (GET/PUT with body), 201 Created (POST that creates a resource — include Location header), 204 No Content (PUT/DELETE with no response body). 3xx redirects: 301 Moved Permanently, 304 Not Modified (ETag cache hit). 4xx client errors: 400 Bad Request (validation failure — include field-level errors), 401 Unauthorized (no valid credentials — trigger re-login), 403 Forbidden (authenticated but lacks permission), 404 Not Found (resource doesn't exist), 409 Conflict (optimistic concurrency clash), 422 Unprocessable Entity (semantic validation failure), 429 Too Many Requests (rate limit exceeded — include Retry-After header). 5xx server errors: 500 Internal Server Error (unexpected exception — never expose stack traces), 503 Service Unavailable (circuit breaker open or maintenance mode).",
+      bangla: "201 Created (POST), 204 No Content (DELETE/PUT), 400 validation, 401 login লাগবে, 403 permission নেই, 429 rate limit — এগুলো মুখস্থ রাখুন।"
+    },
+    {
+      q: 'How do you handle API versioning?',
+      a: "Three main strategies: URL path versioning (/api/v1/users) is explicit and easily cacheable — preferred for public APIs. Header versioning (API-Version: 2.0) keeps URLs clean but is harder to test in a browser and breaks HTTP caching. Query string versioning (?version=2) is simple but pollutes URLs. Best practices: never break existing contracts — additive changes (new fields, new endpoints) are non-breaking; breaking changes (removing fields, changing types) require a new version. Deprecate old versions with sunset headers rather than abrupt removal. In ASP.NET Core, use the Asp.Versioning.Mvc NuGet package with MapToApiVersion attributes for clean multi-version support without duplicate controllers.",
+      bangla: "URL path versioning সবচেয়ে explicit (/api/v1) — breaking change মানেই নতুন version, পুরনো কাজ করতে থাকবে। Sunset header দিয়ে deprecate করুন।"
+    },
+    {
+      q: 'What is the purpose of Swagger/OpenAPI?',
+      a: "OpenAPI is a machine-readable contract for your API — it describes every endpoint, request model, response schema, authentication scheme, and status code in a standard JSON/YAML format. Swagger UI generates interactive documentation from that contract so consumers can explore and test endpoints without writing a single line of client code. In ASP.NET Core with Swashbuckle, XML comments on controllers and ProducesResponseType attributes feed directly into the generated spec. This contract-first approach enables automatic client SDK generation (NSwag, AutoRest), API gateway configuration, mock servers for frontend parallel development, and contract testing to catch breaking changes before deployment.",
+      bangla: "Machine-readable API contract — auto SDK generate, interactive docs, mock server, contract testing সব এখান থেকে। Spec version control এ থাকলে breaking change ধরা যায়।"
+    },
+    {
+      q: 'How would you implement rate limiting?',
+      a: "ASP.NET Core 7+ ships with built-in rate limiting middleware (Microsoft.AspNetCore.RateLimiting). Configure policies: Fixed Window (N requests per time window — simple but allows bursts at window boundary), Sliding Window (smooths burst problem by tracking a rolling window), Token Bucket (steady refill rate with burst capacity — best for most APIs), Concurrency Limiter (caps simultaneous in-flight requests — useful for CPU-bound operations). For distributed scenarios, replace the in-memory limiter with a Redis-backed implementation using RedisRateLimiting. Always return 429 Too Many Requests with a Retry-After header. Apply different limits per client (API key, IP, user tier) using partitioned limiters. Rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining) improve client developer experience.",
+      bangla: "Token Bucket সবচেয়ে ভালো, distributed হলে Redis-backed limiter — 429 + Retry-After header return করুন, per-client partitioned limiter ব্যবহার করুন।"
+    },
+    {
+      q: 'What is the best error response format?',
+      a: "Use RFC 7807 Problem Details (application/problem+json) — it's a standard that ASP.NET Core's ProblemDetails class implements natively. Structure: { type (URI identifying the error class), title (human-readable summary), status (HTTP status code), detail (specific message for this occurrence), instance (URI identifying this specific request), extensions (domain-specific fields like errors dict for validation). For validation errors, include a field-level errors dictionary: { errors: { fieldName: [\"message1\"] } }. Always include a traceId for correlation with server logs. Never expose exception stack traces, connection strings, or internal system details in error responses. Use consistent casing (camelCase) and format across all endpoints — inconsistency is the most common API design complaint from consumers.",
+      bangla: "RFC 7807 ProblemDetails — type, title, status, detail, traceId — stack trace কখনো client এ পাঠাবেন না। সব endpoint এ consistent format।"
+    },
   ],
 };

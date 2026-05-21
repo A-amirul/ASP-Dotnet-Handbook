@@ -7,19 +7,21 @@ import { databaseData } from './database';
 import { frontendData, systemDesignData, devopsData } from './advanced';
 import { codingTasks } from './codingTasks';
 import { apiDocsContent } from './apidocs';
+import { dotnet10Data } from './dotnet10';
 
 export const handbookData = [
-  { id: 'basics', ...basicsData },
+  { ...basicsData },
   { ...apiDocsContent },
-  { id: 'csharp', ...csharpData },
-  { id: 'aspnet', ...aspnetData },
-  { id: 'mvcore', ...mvcoreData },
-  { id: 'webapi', ...webapiData },
-  { id: 'database', ...databaseData },
-  { id: 'frontend', ...frontendData },
-  { id: 'systemdesign', ...systemDesignData },
-  { id: 'devops', ...devopsData },
-  { id: 'tasks', ...codingTasks },
+  { ...csharpData },
+  { ...aspnetData },
+  { ...mvcoreData },
+  { ...webapiData },
+  { ...databaseData },
+  { ...dotnet10Data },
+  { ...frontendData },
+  { ...systemDesignData },
+  { ...devopsData },
+  { ...codingTasks },
 ];
 
-export { basicsData, csharpData, aspnetData, mvcoreData,apiDocsContent, webapiData, databaseData, frontendData, systemDesignData, devopsData, codingTasks };
+export { basicsData, csharpData, aspnetData, mvcoreData, apiDocsContent, webapiData, databaseData, dotnet10Data, frontendData, systemDesignData, devopsData, codingTasks };

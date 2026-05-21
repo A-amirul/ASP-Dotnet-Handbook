@@ -113,6 +113,49 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
   );
 };
 
+const InterviewQItem = ({ q, a, bangla }: { q: string; a: string; bangla?: string }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <li className={cn("rounded-lg transition-colors", open && "bg-white shadow-sm border border-slate-100")}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className={cn(
+          "w-full text-left flex items-start gap-3 group px-3 py-2.5 rounded-lg transition-colors",
+          open ? "bg-brand-cyan-subtle" : "hover:bg-slate-50"
+        )}
+      >
+        <span className="text-brand-cyan font-black shrink-0 text-[11px] mt-px leading-tight">Q:</span>
+        <span className="text-[12px] text-slate-800 font-semibold flex-1 leading-snug">{q}</span>
+        <ChevronRight
+          size={13}
+          className={cn(
+            "shrink-0 mt-0.5 text-slate-400 transition-transform duration-200",
+            open && "rotate-90 text-brand-cyan"
+          )}
+        />
+      </button>
+      {open && (
+        <div className="px-3 pb-3 pt-1 space-y-2.5">
+          <div className="rounded-lg bg-slate-50 border border-slate-200 p-3.5">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-[10px] font-black text-brand-cyan uppercase tracking-widest">Answer</span>
+            </div>
+            <p className="text-[12.5px] text-slate-700 leading-relaxed">{a}</p>
+          </div>
+          {bangla && (
+            <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 border-l-[3px] border-l-indigo-400">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">বাংলা নোট</span>
+              </div>
+              <p className="text-[12px] text-indigo-800 leading-relaxed">{bangla}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </li>
+  );
+};
+
 const SectionRenderer = ({ data: initialData }: { data: any }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
@@ -322,7 +365,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                       components={{
                         table: ({node, ...props}) => (
                           <div className="overflow-x-auto w-full max-w-full pb-2 mb-4 custom-scrollbar">
-                            <table className="min-w-[600px] w-full" {...props} />
+                            <table className="min-w-150 w-full" {...props} />
                           </div>
                         )
                       }}
@@ -416,11 +459,11 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 <h4 className="text-[11px] font-bold text-brand-cyan uppercase tracking-widest mb-4 flex items-center gap-2">
                   <Star size={14} className="fill-brand-cyan text-brand-cyan" /> Interview focus
                 </h4>
-                <ul className="space-y-3">
-                  {section.interviewQs?.map((q: string, i: number) => (
-                    <li key={i} className="text-xs text-slate-700 font-semibold flex gap-3">
-                      <span className="text-brand-cyan font-black">Q:</span> {q}
-                    </li>
+                <ul className="space-y-1">
+                  {section.interviewQs?.map((item: any, i: number) => (
+                    typeof item === 'string'
+                      ? <li key={i} className="text-xs text-slate-700 font-semibold flex gap-3 px-3 py-2"><span className="text-brand-cyan font-black">Q:</span> {item}</li>
+                      : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} />
                   ))}
                 </ul>
               </div>
@@ -447,12 +490,11 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
           <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
             <Star className="text-brand-cyan fill-brand-cyan" size={18} /> Module interview questions
           </h3>
-          <ul className="space-y-3">
-            {data.interviewQuestions.map((q: string, i: number) => (
-              <li key={i} className="text-sm text-slate-700 font-semibold flex gap-3">
-                <span className="text-brand-cyan font-black tabular-nums">{i + 1}.</span>
-                {q}
-              </li>
+          <ul className="space-y-1">
+            {data.interviewQuestions.map((item: any, i: number) => (
+              typeof item === 'string'
+                ? <li key={i} className="text-sm text-slate-700 font-semibold flex gap-3 px-3 py-2"><span className="text-brand-cyan font-black tabular-nums">{i + 1}.</span>{item}</li>
+                : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} />
             ))}
           </ul>
         </div>
@@ -470,7 +512,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 components={{
                   table: ({node, ...props}) => (
                     <div className="overflow-x-auto w-full max-w-full pb-2 mb-4 custom-scrollbar">
-                      <table className="min-w-[600px] w-full" {...props} />
+                      <table className="min-w-150 w-full" {...props} />
                     </div>
                   )
                 }}
