@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
           </button>
           <div className="p-6 bg-slate-subtle border-b border-slate-100 text-center">
             <h1 className="font-bold text-brand-cyan text-xl tracking-tighter">DOTNET </h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Senior Interview Handbook</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Senior Level Handbook</p>
           </div>
 
           <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4">
