@@ -1,193 +1,141 @@
-export const testingContent = {
+export const testingData = {
   id: 'testing',
-  title: 'Unit Testing & Test-Driven Development',
-  description: 'Master testing frameworks and TDD principles for .NET applications',
+  title: 'Testing Strategy for Senior Engineers',
+  description: 'What to test, what to mock, and how seniors use xUnit, Testcontainers, and the test pyramid.',
   sections: [
     {
-      id: 'unit-testing-basics',
-      title: 'Unit Testing Fundamentals',
-      content: `Unit testing is the foundation of reliable code. In .NET, you'll primarily use xUnit, NUnit, or MSTest.`,
-      subsections: [
+      topic: 'Pyramid, AAA, unit vs integration vs e2e',
+      difficulty: 'senior',
+      english: 'Unit tests are fast, isolated, and test domain rules. Integration tests spin real collaborators (SQL, HTTP pipeline) and catch EF translation bugs. E2E tests a user journey and are few because they are slow and flaky. AAA: Arrange, Act, Assert — one act per test. Coverage % is a lagging indicator; seniors cover money paths and regressions from incidents, not getters.',
+      bangla: 'ইউনিট দ্রুত, ইন্টিগ্রেশন EF/SQL ধরে, E2E কম। কাভারেজ % নয় — মানি পাথ ও রিগ্রেশন।',
+      details: `
+| Layer | Example | Mock? |
+| :--- | :--- | :--- |
+| Unit | Discount calculator | Yes, IO |
+| Integration | EF query, API + TestServer | Real DB |
+| E2E | Browser checkout | Almost nothing |
+      `,
+      commonMistakes: ['Mocking IQueryable.', '100% coverage on Program.cs.', 'Testing the mock instead of the system.'],
+      bestPractices: ['Name tests Scenario_Expected.', 'One reason to fail.', 'Regression test for every production bug.'],
+      interviewQs: [
         {
-          title: 'Arrange-Act-Assert Pattern',
-          code: `[Fact]
-public void Add_TwoPositiveNumbers_ReturnsSum()
-{
-    // Arrange
-    var calculator = new Calculator();
-    
-    // Act
-    var result = calculator.Add(2, 3);
-    
-    // Assert
-    Assert.Equal(5, result);
-}`,
-        },
-        {
-          title: 'Using xUnit with Theory',
-          code: `[Theory]
-[InlineData(2, 3, 5)]
-[InlineData(1, 1, 2)]
-[InlineData(0, 0, 0)]
-public void Add_MultipleInputs_ReturnsCorrectSum(int a, int b, int expected)
-{
-    var calculator = new Calculator();
-    var result = calculator.Add(a, b);
-    Assert.Equal(expected, result);
-}`,
+          q: 'What do you not unit test?',
+          a: 'EF LINQ translation, serializer configuration, and thin mappings. Those need a real provider. I also do not test framework code. I unit test invariants and branching policy.',
+          bangla: 'EF অনুবাদ ইউনিট টেস্ট নয় — ইন্টিগ্রেশন।',
+          difficulty: 'senior',
         },
       ],
-      tips: [
-        'Test one thing per test method',
-        'Use descriptive test names that explain the scenario',
-        'Keep tests isolated and independent',
-        'Mock external dependencies',
-      ],
+      practice: 'Write a unit test for a money calculation and an integration test for a query.',
+      code: `[Fact]
+public void Discount_Over500_AppliesTenPercent()
+{
+    var calc = new CartCalculator();
+    var total = calc.Total(subtotal: 600m);
+    Assert.Equal(570m, total); // 10% off, no shipping in this example
+}`,
     },
     {
-      id: 'mocking-dependencies',
-      title: 'Mocking Dependencies with Moq',
-      content: `Moq is the most popular mocking library for .NET. Use it to isolate units under test.`,
-      subsections: [
+      topic: 'xUnit, Moq, FluentAssertions, doubles',
+      difficulty: 'mid',
+      english: 'xUnit: [Fact], [Theory], IClassFixture for shared setup, IAsyncLifetime for async init. Moq: Setup/Verify — verify only what matters. Test doubles: fake (in-memory), stub (canned), mock (behavior assert), spy, dummy. Prefer fakes over mocks for repositories when the fake is small.',
+      bangla: 'Fact/Theory। মক কম, ফেইক বেশি। Verify শুধু গুরুত্বপূর্ণ কল।',
+      details: `
+Do not mock HttpMessageHandler poorly — use a fake handler or WireMock. Time: inject IClock.
+      `,
+      commonMistakes: ['VerifyAll() noise.', 'Sharing DbContext between tests without isolation.'],
+      bestPractices: ['Theories for edge cases.', 'CancellationToken in SUT signatures so tests can pass TestContext token.'],
+      interviewQs: [
         {
-          title: 'Setting Up Mocks',
-          code: `[Fact]
-public void GetUser_WithValidId_ReturnUser()
-{
-    // Arrange
-    var mockRepository = new Mock<IUserRepository>();
-    var user = new User { Id = 1, Name = "John" };
-    mockRepository.Setup(r => r.GetUserById(1))
-        .ReturnsAsync(user);
-    
-    var service = new UserService(mockRepository.Object);
-    
-    // Act
-    var result = await service.GetUserAsync(1);
-    
-    // Assert
-    Assert.NotNull(result);
-    Assert.Equal("John", result.Name);
-    mockRepository.Verify(r => r.GetUserById(1), Times.Once);
-}`,
+          q: 'Mock vs fake?',
+          a: 'A mock asserts interactions (Times.Once). A fake is a working lightweight implementation (in-memory repo). Seniors use fakes for state and mocks for "did we call the gateway once with this idempotency key."',
+          bangla: 'মক ইন্টারঅ্যাকশন, ফেইক কাজ করে এমন হালকা ইমপ্লিমেন্টেশন।',
+          difficulty: 'senior',
         },
+      ],
+      practice: 'Replace a mocked repository with an in-memory fake for a service test.',
+      code: `var gateway = new Mock<IPaymentGateway>();
+gateway.Setup(g => g.ChargeAsync(It.IsAny<Money>(), "k1", It.IsAny<CancellationToken>()))
+    .ReturnsAsync(ChargeResult.Ok);
+var sut = new CheckoutService(gateway.Object, new FakeOrders());
+await sut.PayAsync(cmd, "k1", CancellationToken.None);
+gateway.Verify(g => g.ChargeAsync(It.IsAny<Money>(), "k1", It.IsAny<CancellationToken>()), Times.Once);`,
+    },
+    {
+      topic: 'EF, HttpClient, Testcontainers, async tests',
+      difficulty: 'expert',
+      english: 'Use Testcontainers or SQLite with caveats (SQL Server dialect differs). WebApplicationFactory for the HTTP pipeline. Never .Result in tests — await. Testing async: always pass CancellationToken; assert cancel path. Snapshot SQL with EF logging in a focused test if a query regressed.',
+      bangla: 'Testcontainers সত্যিকারের SQL। WebApplicationFactory পাইপলাইন। টেস্টেও await।',
+      details: `
+In-memory EF provider is not SQL Server — it lies. Prefer dockerized SQL for anything with SQL functions, transactions, or concurrency tokens.
+      `,
+      commonMistakes: ['In-memory provider for production SQL features.', 'One giant fixture that all tests mutate.'],
+      bestPractices: ['Respawn or unique DB per class.', 'Seed explicitly in Arrange.'],
+      interviewQs: [
         {
-          title: 'Mocking Async Methods',
-          code: `var mock = new Mock<IDataService>();
-mock.Setup(m => m.GetDataAsync(It.IsAny<int>()))
-    .ReturnsAsync(new Data { Id = 1, Value = "test" });
+          q: 'How do you test EF Core queries?',
+          a: 'Integration test against a real engine (Testcontainers). Arrange seed data, Act query, Assert DTO shape and SQL if needed via logging. I do not mock DbSet. For domain logic, keep it off IQueryable.',
+          bangla: 'আসল SQL ইঞ্জিন। DbSet মক নয়।',
+          difficulty: 'expert',
+        },
+      ],
+      practice: 'Add a WebApplicationFactory test that POSTs /orders and expects 201.',
+      code: `public class OrdersApiTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+    public OrdersApiTests(WebApplicationFactory<Program> f) => _client = f.CreateClient();
 
-mock.Setup(m => m.DeleteAsync(It.IsAny<int>()))
-    .Returns(Task.CompletedTask);`,
-        },
-      ],
-      tips: [
-        'Mock interfaces, not concrete classes',
-        'Use It.IsAny<T>() for flexible matching',
-        'Verify critical calls with Verify()',
-        'Use Strict mock mode for strict verification',
-      ],
-    },
-    {
-      id: 'integration-testing',
-      title: 'Integration Testing',
-      content: `Integration tests verify that multiple components work together correctly.`,
-      subsections: [
-        {
-          title: 'Testing with WebApplicationFactory',
-          code: `public class UserControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
-{
-    private readonly WebApplicationFactory<Program> _factory;
-    
-    public UserControllerIntegrationTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-    }
-    
     [Fact]
-    public async Task GetUser_WithValidId_ReturnsOk()
+    public async Task Create_Returns201()
     {
-        var client = _factory.CreateClient();
-        
-        var response = await client.GetAsync("/api/users/1");
-        
-        Assert.True(response.IsSuccessStatusCode);
+        var res = await _client.PostAsJsonAsync("/orders", new { sku = "A", qty = 1 });
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
     }
 }`,
-        },
-        {
-          title: 'Custom Web Application Factory',
-          code: `public class CustomWebApplicationFactory : WebApplicationFactory<Program>
-{
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.ConfigureServices(services =>
-        {
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IUserRepository));
-            
-            services.Remove(descriptor);
-            
-            services.AddScoped<IUserRepository>(_ => 
-                new MockUserRepository());
-        });
-    }
-}`,
-        },
-      ],
-      tips: [
-        'Use WebApplicationFactory for in-memory testing',
-        'Override ConfigureWebHost to customize test setup',
-        'Test actual database with SQLite in-memory',
-        'Clean up database state between tests',
-      ],
-    },
-    {
-      id: 'test-driven-development',
-      title: 'Test-Driven Development (TDD)',
-      content: `TDD follows the Red-Green-Refactor cycle: write failing test, make it pass, then refactor.`,
-      subsections: [
-        {
-          title: 'Red-Green-Refactor Example',
-          code: `// RED: Write test that fails
-[Fact]
-public void ValidateEmail_WithInvalidEmail_ReturnsFalse()
-{
-    var validator = new EmailValidator();
-    Assert.False(validator.IsValid("invalid-email"));
-}
-
-// GREEN: Write minimum code to pass
-public class EmailValidator
-{
-    public bool IsValid(string email) => 
-        email.Contains("@") && email.Contains(".");
-}
-
-// REFACTOR: Improve implementation
-public class EmailValidator
-{
-    private readonly string _emailPattern = @"^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
-    
-    public bool IsValid(string email) => 
-        Regex.IsMatch(email, _emailPattern);
-}`,
-        },
-      ],
-      tips: [
-        'Start with failing tests',
-        'Write minimum code to pass',
-        'Refactor for clarity and performance',
-        'Keep test-to-code ratio 1:1 or higher',
-      ],
     },
   ],
-  interviewQuestions: [
-    'Explain the difference between unit and integration tests.',
-    'What is the AAA pattern in testing?',
-    'How do you test async methods in C#?',
-    'What is the difference between Times.Once, Times.AtLeast, and Times.Never in Moq?',
-    'Describe TDD and its benefits.',
-    'How do you handle database state in integration tests?',
-  ],
+  quickRevision: {
+    concepts: [
+      'Pyramid',
+      'AAA',
+      'Do not mock IQueryable',
+      'Fact vs Theory',
+      'Fake vs mock',
+      'IClock',
+      'WebApplicationFactory',
+      'Testcontainers',
+      'In-memory EF lies',
+      'Regression tests from incidents',
+    ],
+    questions: [
+      'What not to unit test?',
+      'Mock vs fake?',
+      'How to test EF?',
+      'How to test HttpClient?',
+      'Coverage traps?',
+      'How to test cancellation?',
+      'Shared fixture isolation?',
+      'When e2e?',
+      'How to test auth policies?',
+      'Flaky tests — what do you do?',
+    ],
+    mistakes: [
+      'Mock IQueryable',
+      'In-memory EF for SQL Server features',
+      '.Result in tests',
+      'Testing mocks',
+      'No regression test after outage',
+    ],
+    scenarios: [
+      'CI green, prod SQL fails',
+      'Flaky e2e blocking release',
+      'Team worships 100% coverage',
+      'Need to test a migration',
+      'Policy authorization bug',
+    ],
+  },
+  revisionSummary: `
+- Test the money path for real. Mock at the edges, not IQueryable.
+- Every incident deserves a regression test.
+  `,
+  summary: 'সিনিয়র টেস্টিং মানে ঝুঁকি কমানো — মক থিয়েটার নয়।',
 };

@@ -157,13 +157,107 @@ public class MyBackgroundWorker : BackgroundService {
     options.AddPolicy("SuperUser", policy =>
         policy.RequireRole("Admin").RequireClaim("EmpID"));
 });`
+    },
+    {
+      topic: "Request Lifecycle, HttpClientFactory, Options, Minimal APIs",
+      difficulty: 'senior',
+      english: "A request hits Kestrel, then middleware (exception handler, HTTPS, routing, CORS, auth), then endpoint (controller or minimal API), then model binding and filters, then your service, then repository/DbContext, then SQL, then the response travels back out through middleware. HttpClientFactory prevents socket exhaustion. The Options pattern binds configuration with validation. Minimal APIs are first-class for small services; controllers still win for large filter/convention-heavy APIs.",
+      bangla: 'ক্লায়েন্ট → মিডলওয়্যার → রাউটিং → কন্ট্রোলার → সার্ভিস → রেপো → ডিবি → রেসপন্স। HttpClient সরাসরি new করবেন না।',
+      details: `
+### Lifecycle
+Client → Kestrel → Middleware → Routing → AuthN/AuthZ → Model bind/validate → Filters → Controller/Minimal API → Application service → EF/Dapper → SQL Server → serialize → middleware outbound → client
+
+### Also required in interviews
+- IHttpClientFactory + named/typed clients + Polly (timeout, retry, circuit breaker)
+- IOptions / IOptionsSnapshot / IOptionsMonitor
+- Health checks, rate limiting, output caching, response compression
+- Global exception middleware → ProblemDetails
+- Environments + user secrets + Key Vault — never secrets in appsettings committed to git
+      `,
+      commonMistakes: [
+        'new HttpClient() per request — ephemeral port exhaustion.',
+        'Singleton IOptionsSnapshot misuse; or injecting IConfiguration everywhere instead of Options.',
+        'Putting business logic in middleware that should be a service.',
+      ],
+      bestPractices: [
+        'Typed HttpClient with BaseAddress and resilience pipeline.',
+        'Validate options on startup so the app fails fast.',
+        'Health checks for DB, Redis, and downstream HTTP.',
+      ],
+      interviewQs: [
+        {
+          q: 'Walk through an ASP.NET Core request from socket to SQL and back.',
+          a: 'Kestrel accepts TCP/HTTP. The middleware pipeline runs inbound. UseRouting matches an endpoint. Authentication sets User. Authorization may challenge. Model binding fills parameters; validation may return 400. Action filters run. The action calls a scoped service which uses a scoped DbContext. SQL runs. The action result serializes JSON. Middleware runs outbound (including exception handler if something threw). Connection is returned to the pool when the scope disposes DbContext.',
+          bangla: 'Kestrel → middleware → routing → auth → bind → action → service → DbContext → SQL → JSON → outbound middleware।',
+          followUp: 'Where would you add correlation IDs?',
+          difficulty: 'senior',
+        },
+        {
+          q: 'Why is IHttpClientFactory mandatory in production?',
+          a: 'HttpClient is designed to be long-lived. Disposing per request leaves sockets in TIME_WAIT. A static HttpClient never picks up DNS changes. IHttpClientFactory pools handlers, rotates them to refresh DNS, and integrates with typed clients and Polly. Seniors mention this as a real outage class, not a style preference.',
+          bangla: 'প্রতি রিকোয়েস্টে new HttpClient সকেট ফুরায়। Factory হ্যান্ডলার পুল করে।',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Register a typed GitHubClient with a 3-second timeout and a circuit breaker.',
+      code: `builder.Services.AddHttpClient<IGitHubClient, GitHubClient>(c =>
+{
+    c.BaseAddress = new Uri("https://api.github.com/");
+    c.Timeout = TimeSpan.FromSeconds(3);
+});
+
+builder.Services.AddOptions<JwtOptions>()
+    .BindConfiguration("Jwt")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();`,
     }
   ],
+  quickRevision: {
+    concepts: [
+      'Middleware order is a security feature',
+      'Use vs Run vs Map',
+      'Captive dependency',
+      'JWT + refresh rotation',
+      'Policies vs roles',
+      'HttpClientFactory',
+      'Options pattern',
+      'ProblemDetails',
+      'Scoped DbContext',
+      'Health checks',
+    ],
+    questions: [
+      'Use vs Run?',
+      'Why not Singleton DbContext?',
+      'Pipeline order for Auth?',
+      'Refresh tokens why?',
+      'HttpClientFactory why?',
+      'IOptions vs IOptionsMonitor?',
+      'Minimal APIs vs controllers?',
+      'Where do correlation IDs go?',
+      'How do you handle global exceptions?',
+      'How do you keep secrets out of git?',
+    ],
+    mistakes: [
+      'Authentication after MapControllers',
+      'new HttpClient per call',
+      'Singleton depending on Scoped',
+      'Secrets in appsettings.json',
+      'Business logic in middleware',
+    ],
+    scenarios: [
+      'All requests anonymous in production — pipeline order',
+      'SNAT / socket exhaustion',
+      'JWT valid but policy fails',
+      'Config works locally, fails in Azure',
+      'Downstream API timeout cascades',
+    ],
+  },
   revisionSummary: `
 - **Middleware**: Pipeline order is critical (Routing -> Auth -> Endpoints).
 - **DI**: Transient for utilities, Scoped for DB, Singleton for Global.
 - **Security**: Use JWT for APIs, Policies for complex logic.
 - **Config**: Use IOptions pattern for strongly-typed settings.
+- **HTTP**: IHttpClientFactory + timeouts; never new HttpClient per request.
   `,
   summary: "এএসপি ডট নেট কোর আর্কিটেকচার সম্পর্কে গভীর ধারণা সরাসরি আপনার কোডিং কোয়ালিটি এবং ক্যারিয়ার গ্রোথ নিশ্চিত করে।"
 };

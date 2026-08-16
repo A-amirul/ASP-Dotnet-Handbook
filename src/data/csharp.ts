@@ -1,7 +1,7 @@
 export const csharpData = {
   id: 'csharp',
-  title: 'Advanced C# Mastery',
-  description: 'Deep dive into C# internals, memory management, and advanced features for senior roles.',
+  title: 'C# Language, OOP & Internals',
+  description: 'From types and SOLID to GC, Span, and the answers senior interviewers expect — why, internals, trade-offs, failure modes.',
   sections: [
     {
       topic: "OOP & SOLID Principles",
@@ -483,8 +483,197 @@ public struct Vector2 { public int X, Y; }
 
 // Class: Equality by Reference
 public class Person { ... }`
+    },
+    {
+      topic: "Value Types vs Reference Types, Stack vs Heap, Boxing",
+      difficulty: 'senior',
+      english: "Value types (struct, enum, primitive) copy by value. Reference types (class, record class, array, delegate) copy the reference. Stack holds frames and many locals; the heap holds objects the GC manages. Boxing allocates a heap wrapper for a value type when it is treated as object or an interface — a silent allocation that shows up in hot loops and high-RPS APIs.",
+      bangla: "ভ্যালু টাইপ কপি হয়, রেফারেন্স টাইপ শুধু পয়েন্টার কপি হয়। Boxing মানে struct কে object হিসেবে heap এ তোলা — হট পাথে ব্যয়বহুল।",
+      details: `
+| Concept | Lives where | Copy semantics | GC |
+| :--- | :--- | :--- | :--- |
+| Local \`int\` / small struct | Stack (usually) | Full copy | No |
+| Field of a class | Heap with the object | Copy of the field value | Yes (object) |
+| Class instance | Heap | Copy of reference | Yes |
+| Boxed struct | Heap | New wrapper object | Yes |
+
+### Nullable, strings, StringBuilder
+- \`T?\` for value types is \`Nullable<T>\` — still a value type.
+- Strings are immutable reference types; concatenation in a loop allocates. Use \`StringBuilder\` or \`string.Create\` / interpolation for fewer allocations.
+- \`Span<T>\` / \`ReadOnlySpan<T>\` / \`Memory<T>\` avoid allocations when slicing buffers. Span cannot be stored on the heap (ref struct).
+      `,
+      commonMistakes: [
+        'Mutating a struct retrieved from a list (you mutated a copy).',
+        'Using struct as a dictionary key without fixing Equals/GetHashCode.',
+        'Boxing in LINQ: list of structs cast to IEnumerable<object>.',
+      ],
+      bestPractices: [
+        'Keep structs small, immutable, and under ~16 bytes when they are copied often.',
+        'Use records for DTOs; classes for identity-bearing entities.',
+        'Profile allocations with BenchmarkDotNet / dotnet-trace before micro-optimizing.',
+      ],
+      interviewQs: [
+        {
+          q: 'Where does a struct live if it is a field of a class?',
+          a: 'On the heap, inline inside the object. Stack vs heap is not "structs always stack". The containing object is heap-allocated; the struct memory is part of that object layout. Locals may be stack-allocated or enregistered. Boxing is a separate heap allocation that wraps the value.',
+          bangla: 'ক্লাসের ফিল্ড হলে struct হিপের ভিতরেই থাকে — সব struct স্ট্যাকে নয়।',
+          followUp: 'What happens if that struct implements an interface and you pass it as the interface type?',
+          difficulty: 'senior',
+        },
+        {
+          q: 'Why is boxing expensive in a high-throughput API?',
+          a: 'Each box is a heap allocation plus later GC. In a loop over value types stored as object or non-generic collections, you allocate per element. Generics were invented partly to avoid this. Today, object-based APIs, non-generic ArrayList, and some interface calls on structs still box.',
+          bangla: 'প্রতিটা box একটি heap allocation — হট লুপে GC চাপ বাড়ায়।',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Write a benchmark: concatenating 10_000 strings with + vs StringBuilder vs string.Join.',
+      code: `int n = 42;
+object boxed = n;              // heap allocation
+int unboxed = (int)boxed;
+
+ReadOnlySpan<char> slice = "order-123".AsSpan(6); // no string alloc
+var sb = new StringBuilder(256);
+sb.Append("order-").Append(123);`,
+    },
+    {
+      topic: "IDisposable, Finalizers, Span, and Collection Interfaces",
+      difficulty: 'senior',
+      english: "IDisposable is for deterministic cleanup of unmanaged or scarce resources (sockets, files, DbContext). Finalizers are a last-chance non-deterministic backup and should be rare. await using is IAsyncDisposable. Collection interfaces communicate intent: IEnumerable (forward-only, maybe deferred), IReadOnlyList (indexed, no mutate), ICollection (mutate), IList (index + mutate). Yield return builds an iterator state machine — deferred, like LINQ.",
+      bangla: "IDisposable ডিটারমিনিস্টিক ক্লিনআপ। Finalizer শেষ অবলম্বন। কালেকশন ইন্টারফেস দিয়ে ইন্টেন্ট প্রকাশ করুন — IEnumerable মানেই লিস্ট নয়।",
+      details: `
+| Interface | Meaning | Senior use |
+| :--- | :--- | :--- |
+| IEnumerable<T> | Can be enumerated | May be deferred / multiple-enum trap |
+| IQueryable<T> | Expression tree for a provider | EF Core — do not enumerate too early |
+| IReadOnlyCollection<T> | Count, no mutate | Return from services |
+| IReadOnlyList<T> | Indexer | Prefer over List in public APIs |
+| ICollection<T> | Add/Remove | Internal mutation |
+| IList<T> | Index + mutate | Rarely needed as a parameter |
+
+GC generations: Gen0 short-lived, Gen1, Gen2 long-lived, LOH for large objects (~85KB+). Finalizers delay collection (f-reachable queue).
+      `,
+      commonMistakes: [
+        'Implementing a finalizer without IDisposable (or vice versa without GC.SuppressFinalize).',
+        'Returning IQueryable from a repository and then composing in the controller after the context is disposed.',
+        'Enumerating IEnumerable twice (double SQL or double HTTP).',
+      ],
+      bestPractices: [
+        'DbContext and HttpClient (via IHttpClientFactory) must be disposed/owned correctly.',
+        'Prefer IAsyncDisposable for async cleanup (e.g. flushing).',
+        'Use yield only when lazy streaming is actually needed.',
+      ],
+      interviewQs: [
+        {
+          q: 'IDisposable vs finalizer — when do you need each?',
+          a: 'IDisposable is the contract callers use with using. A finalizer only exists if you wrap true unmanaged resources and need a safety net if Dispose was forgotten. Most application code should never write a finalizer. SafeHandle exists so you usually do not write one. Forgetting Dispose on DbContext leaks connection pool entries — that is a production outage, not a trivia answer.',
+          bangla: 'using দিয়ে Disposeই মূল পথ। Finalizer প্রায় কখনোই অ্যাপ কোডে লিখবেন না — DbContext না ডিসপোজ করলে কানেকশন পুল ফুরায়।',
+          followUp: 'What is a captive DbContext and how does it relate to Dispose?',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Implement IAsyncDisposable on a wrapper that flushes a buffer then disposes an inner stream.',
+      code: `public sealed class ReportBuffer : IAsyncDisposable
+{
+    private readonly Stream _stream;
+    public ReportBuffer(Stream stream) => _stream = stream;
+
+    public async ValueTask DisposeAsync()
+    {
+        await _stream.FlushAsync();
+        await _stream.DisposeAsync();
+    }
+}
+
+IReadOnlyList<Order> GetOrders() => _orders; // intent: do not mutate`,
+    },
+    {
+      topic: "Exception Handling and Pattern Matching",
+      difficulty: 'mid',
+      english: "Exceptions are for exceptional failures, not control flow. Catch specific types, never swallow. In ASP.NET Core, map exceptions to ProblemDetails in middleware — do not leak stack traces. Pattern matching (switch expressions, property patterns, list patterns) replaces fragile type-check chains and is a common C# interview topic alongside records.",
+      bangla: 'এক্সেপশন কন্ট্রোল ফ্লো নয়। স্পেসিফিক ক্যাচ, সোয়ালো করবেন না। API তে ProblemDetails।',
+      details: `
+### Rules seniors follow
+- Do not catch Exception unless at a boundary (middleware, worker loop).
+- Rethrow with \`throw;\` not \`throw ex;\` (preserve stack).
+- Use Result/ProblemDetails for expected business failures (insufficient funds) vs exceptions for bugs and infrastructure failure.
+- \`when\` filters on catch clauses.
+      `,
+      commonMistakes: [
+        'catch (Exception) { } empty — hides production bugs.',
+        'throw ex; resetting the stack trace.',
+        'Using exceptions for "user not found" on a hot GET path.',
+      ],
+      bestPractices: [
+        'Fail fast on invariant violations; return 4xx for client mistakes.',
+        'Log with exception object as first argument so Serilog captures the stack.',
+        'Use switch expressions for closed discriminated unions / status codes.',
+      ],
+      interviewQs: [
+        {
+          q: 'Should "entity not found" be an exception?',
+          a: 'Usually no for a public GET. Return 404 via typed results or a Result type. Exceptions are expensive and imply a bug. Use exceptions when the caller cannot reasonably continue (broken invariant, failed infrastructure). A repository used by many hosts might throw to keep the domain pure — then the API layer maps to 404. Be consistent and explain the boundary.',
+          bangla: 'পাবলিক GET এ 404 রিটার্ন করুন। এক্সেপশন ব্যয়বহুল এবং বাগ বোঝায় — ইনফ্রা ফেইলিউরে ব্যবহার করুন।',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Rewrite a nested if-else status mapper as a switch expression with property patterns.',
+      code: `string Describe(Order o) => o switch
+{
+    { Status: OrderStatus.Paid, Total: > 10_000 } => "high-value paid",
+    { Status: OrderStatus.Paid } => "paid",
+    { Status: OrderStatus.Cancelled } => "cancelled",
+    _ => "open"
+};
+
+try { await _db.SaveChangesAsync(ct); }
+catch (DbUpdateConcurrencyException ex)
+{
+    _logger.LogWarning(ex, "Concurrency conflict on order {Id}", id);
+    throw;
+}`,
     }
   ],
+  quickRevision: {
+    concepts: [
+      'SOLID with a real example each',
+      'Interface vs abstract class (and C# 8 defaults)',
+      'Value vs reference, boxing',
+      'GC generations and LOH',
+      'IDisposable vs finalizer',
+      'Records for DTOs',
+      'async all the way',
+      'Generics avoid boxing',
+      'Span for slicing without alloc',
+      'Exceptions at boundaries, not for 404s',
+    ],
+    questions: [
+      'DIP vs DI?',
+      'When abstract class over interface?',
+      'Where does a struct field of a class live?',
+      'Why is boxing expensive?',
+      'IDisposable vs finalizer?',
+      'Why records for DTOs?',
+      'What is a captive dependency?',
+      'yield vs returning a List?',
+      'IEnumerable vs IReadOnlyList as a return type?',
+      'throw vs throw ex?',
+    ],
+    mistakes: [
+      'God classes violating SRP',
+      'NotImplementedException in overrides (LSP)',
+      'Huge mutable structs',
+      'Empty catch blocks',
+      'Treating IEnumerable as a materialized list',
+    ],
+    scenarios: [
+      'API allocations spike after a "simple" LINQ change (boxing)',
+      'Connection pool exhausted — DbContext not disposed',
+      'Equals broken on a struct dictionary key',
+      'Memory grows — finalizers / LOH fragmentation',
+      'Need to add a method to a published interface',
+    ],
+  },
   revisionSummary: `
 - **C# Mastery** requires balance between syntax knowledge and runtime understanding.
 - **Memory**: Know the difference between Managed (GC) and Unmanaged (IDisposable) resources.

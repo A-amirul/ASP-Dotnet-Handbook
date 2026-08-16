@@ -93,12 +93,94 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: dotnet test --configuration Release`
+    },
+    {
+      topic: "Azure for .NET Architects",
+      difficulty: 'expert',
+      english: "Seniors design on Azure with identity and operations first: App Service or Container Apps for compute, Azure SQL for relational data, Blob for files, Redis for shared cache, Service Bus for commands/queues, Functions for event glue, Key Vault + Managed Identity instead of connection strings in config, Application Insights for traces/metrics. AKS is for teams that already need Kubernetes — not a default.",
+      bangla: 'অ্যাজুরে Managed Identity ও Key Vault দিয়ে সিক্রেট সরান। App Insights ছাড়া প্রোডাকশন ডিবাগ অন্ধ। AKS ডিফল্ট নয়।',
+      details: `
+| Need | Typical Azure choice | Senior note |
+| :--- | :--- | :--- |
+| HTTP API | App Service / Container Apps | Start here |
+| SQL | Azure SQL + elastic pool | Watch DTU/vCore and DTU throttling |
+| Files | Blob + CDN | SAS vs Managed Identity |
+| Cache | Azure Cache for Redis | Still handle stampede in app |
+| Messaging | Service Bus | Sessions for ordering; vs Event Hubs/Kafka |
+| Secrets | Key Vault | Never store secrets in App Settings long-term |
+| Observability | App Insights + Log Analytics | Correlation across services |
+| APIs | API Management | Rate limit, JWT, versioning at edge |
+      `,
+      commonMistakes: [
+        'Connection strings in source control or plain App Settings forever.',
+        'Choosing AKS for a 2-service app.',
+        'No health probes — deployments kill in-flight requests.',
+      ],
+      bestPractices: [
+        'Managed Identity to SQL, Blob, Key Vault.',
+        'Slot swaps / blue-green with warm-up.',
+        'Budget alerts and throttling dashboards.',
+      ],
+      interviewQs: [
+        {
+          q: 'How would you store SQL credentials for an App Service?',
+          a: 'Prefer Managed Identity and Azure AD auth to SQL so there is no password. If a secret is required, Key Vault references in App Settings, identity granted Get on the vault. Rotate. Never bake secrets into the image. Locally use user-secrets or a dev Key Vault.',
+          bangla: 'Managed Identity সেরা। পাসওয়ার্ড লাগলে Key Vault + identity।',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Sketch an architecture: API on Container Apps, SQL, Redis, Service Bus, Key Vault, App Insights.',
+      code: `// Program.cs — DefaultAzureCredential for Key Vault / SQL
+builder.Configuration.AddAzureKeyVault(
+    new Uri(builder.Configuration["KeyVault:Uri"]!),
+    new DefaultAzureCredential());`,
+    },
+    {
+      topic: "Git for Senior Engineers",
+      difficulty: 'mid',
+      english: 'Seniors treat Git as a communication tool. Trunk-based development with short-lived branches is the default for continuous delivery. Git Flow is heavier and fits release trains. Rebase to keep a reviewable history on your branch; do not rebase shared main. Revert is the safe undo on main. Reset --hard is local only. PRs need a review checklist: correctness, tests, observability, security, rollback.',
+      bangla: 'মেইনে rebase নয়। ভুল ডিপ্লয় হলে revert. PR মানে রিভিউ চেকলিস্ট — শুধু ডিফ নয়।',
+      details: `
+| Command | Use | Danger |
+| :--- | :--- | :--- |
+| merge | Integrate | Extra merge commits |
+| rebase | Clean local history | Rewriting shared history |
+| cherry-pick | Hotfix one commit | Duplicate commits |
+| revert | Undo on main | Safe, adds a commit |
+| reset | Move HEAD locally | --hard loses uncommitted work |
+| squash | One commit per PR | Hides intermediate history |
+      `,
+      commonMistakes: [
+        'Force-pushing main.',
+        'Giant PRs that cannot be reviewed.',
+        'Committing secrets, then "deleting" them in a later commit (still in history).',
+      ],
+      bestPractices: [
+        'Small PRs, conventional commits or a clear why-message.',
+        'Protected main: CI required, no direct push.',
+        'Code review: ask about failure modes, not only style.',
+      ],
+      interviewQs: [
+        {
+          q: 'A bad commit is already on main in production. Reset or revert?',
+          a: 'Revert. Main is shared; reset rewrites history and breaks every clone. Revert adds a compensating commit, CI runs, deploy is a forward move. Reset --hard is for unpushed local work only.',
+          bangla: 'প্রোডাকশন মেইনে revert। reset শুধু লোকাল আনপুশড কাজের জন্য।',
+          difficulty: 'senior',
+        },
+      ],
+      practice: 'Write a PR description template: intent, risk, rollback, test evidence.',
+      code: `# git
+# feature branch: rebase onto origin/main locally
+# main: merge --no-ff or squash merge via PR
+# incident: git revert <sha> && git push`,
     }
   ],
   revisionSummary: `
 - **Docker**: Slim images = faster deployment + better security.
 - **CI/CD**: Automate everything; manual is the enemy of stability.
 - **Monitoring**: Use health checks (/health) for reliable hosting.
+- **Azure**: Managed Identity + Key Vault + App Insights.
+- **Git**: Revert on main; never rewrite shared history.
   `,
   summary: "আধুনিক .NET অ্যাপ্লিকেশনকে প্রফেশনালি রান করতে ডকার এবং CI/CD এর ওপর দখল থাকা এখন বাধ্যতামূলক।"
 };
@@ -292,12 +374,112 @@ public class GetProductHandler {
     private readonly IProductRepository _repo;
     public GetProductHandler(IProductRepository repo) => _repo = repo;
 }`
+    },
+    {
+      topic: "System Design Method + URL Shortener",
+      difficulty: 'expert',
+      english: 'Every design interview: clarify functional vs non-functional requirements, estimate scale, draw a high-level diagram, pick storage, then attack your own design (hot keys, single points of failure, consistency). A URL shortener is the canonical warm-up: write path (create mapping), read path (302 redirect), uniqueness, analytics, abuse.',
+      bangla: 'প্রথমে রিকোয়ারমেন্ট, তারপর স্কেল, তারপর ডায়াগ্রাম, তারপর নিজের ডিজাইন আক্রমণ করুন। URL shortener দিয়ে পদ্ধতি আয়ত্ত করুন।',
+      details: `
+### Method (use on every problem)
+1. Functional: create, redirect, optional expiry, custom aliases
+2. Non-functional: 10:1 read/write, 50ms p99 redirect, 99.99% availability
+3. APIs: POST /v1/links, GET /{code}
+4. Data: code → long URL (Redis + SQL), unique code (hash or base62 id)
+5. Scale: cache hot redirects, CDN optional, partition by code
+6. Failure: Redis down → SQL fallback; uniqueness conflict → retry
+7. Security: auth on create, rate limit, malware URL scan
+8. Trade-off: SQL source of truth vs Redis speed
+
+### Other systems to practice (same template)
+Employee/Payroll/Attendance (HRIS), E-commerce, Inventory, Notification, File storage, Payment, Chat, Food delivery, Ride sharing — requirements, APIs, data model, cache, queue, bottlenecks, security, monitoring.
+      `,
+      commonMistakes: [
+        'Jumping to Kafka before requirements.',
+        'No numbers (QPS, payload size, retention).',
+        'Ignoring abuse (open redirect, brute-force codes).',
+      ],
+      bestPractices: [
+        'State assumptions out loud.',
+        'Separate read and write paths.',
+        'End with risks and a v2.',
+      ],
+      interviewQs: [
+        {
+          q: 'How do you generate unique short codes without collisions at scale?',
+          a: 'Two common designs: (1) auto-increment ID encoded as base62 — simple, ordered, needs a unique ID service or DB sequence; (2) hash the URL and take N bits — collisions need retry. Avoid UUID in the URL (too long). Pre-generate codes in a pool if you need extra entropy. Unique index in SQL is the last line of defense.',
+          bangla: 'Base62 ID বা হ্যাশ+রিট্রাই। SQL unique index শেষ রক্ষা।',
+          followUp: 'How do you handle a celebrity URL that is 1% of all traffic?',
+          difficulty: 'expert',
+        },
+      ],
+      practice: 'Design POST /links and GET /{code} with Redis cache-aside and a unique index on code.',
+      code: `public sealed class LinkService(IDistributedCache cache, AppDb db)
+{
+    public async Task<string?> ResolveAsync(string code, CancellationToken ct)
+    {
+        var cached = await cache.GetStringAsync(code, ct);
+        if (cached is not null) return cached;
+        var url = await db.Links.AsNoTracking()
+            .Where(l => l.Code == code)
+            .Select(l => l.Url)
+            .FirstOrDefaultAsync(ct);
+        if (url is not null)
+            await cache.SetStringAsync(code, url, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6) }, ct);
+        return url;
+    }
+}`,
+    },
+    {
+      topic: "E-commerce, Payments, Notifications — Trade-off Pack",
+      difficulty: 'expert',
+      english: 'E-commerce: catalog (cache-heavy reads), cart (user-scoped), checkout (idempotent, inventory reservation, payment, outbox). Payments: never dual-write payment + order without an outbox; webhooks must be idempotent. Notifications: fan-out to email/SMS/push via a queue; do not send inside the HTTP request. Inventory: reservation vs oversell; use conditional updates or a ledger.',
+      bangla: 'চেকআউট ইডেম্পোটেন্ট। পেমেন্ট ও অর্ডার আউটবক্স ছাড়া দুইবার লিখবেন না। নোটিফিকেশন রিকোয়েস্টের ভিতরে পাঠাবেন না।',
+      details: `
+| System | Hard part | Senior move |
+| :--- | :--- | :--- |
+| E-commerce | Checkout consistency | Reserve stock, outbox OrderPlaced, payment saga |
+| Payment | Double charge | Idempotency key, webhook dedupe |
+| Notification | Fan-out + retries | Queue + template service + DLQ |
+| Chat | Ordering + presence | WebSocket gateway, per-conversation partition |
+| Ride / delivery | Geo + matching | Location stream, matching worker, timeouts |
+| File storage | Large upload | Direct-to-blob SAS, virus scan, CDN |
+| HRIS (employee/payroll/attendance) | Correctness over QPS | Strong SQL transactions, audit log |
+      `,
+      commonMistakes: [
+        'Calling Stripe inside a DB transaction.',
+        'Sending email in the controller action.',
+        'Overselling because stock was a cached integer.',
+      ],
+      bestPractices: [
+        'Idempotency-Key header on all money POSTs.',
+        'Transactional outbox for events.',
+        'Audit log for payroll and inventory adjustments.',
+      ],
+      interviewQs: [
+        {
+          q: 'User double-clicks Pay. How do you charge once?',
+          a: 'Client sends Idempotency-Key. Server stores key + request hash + result. Same key returns the first result. Payment provider also gets the same key. Webhooks use event id as a unique constraint. Checkout is a state machine: Pending → Paid, never Paid twice.',
+          bangla: 'Idempotency-Key + স্টেট মেশিন + ওয়েবহুক ইভেন্ট আইডি ইউনিক।',
+          difficulty: 'expert',
+        },
+      ],
+      practice: 'Write an outbox table schema and a worker that publishes unpublished rows.',
+      code: `public class OutboxMessage
+{
+    public Guid Id { get; set; }
+    public string Type { get; set; } = "";
+    public string Payload { get; set; } = "";
+    public DateTimeOffset? PublishedAt { get; set; }
+}`,
     }
   ],
   revisionSummary: `
 - **Scale**: Horizontal (more nodes) vs Vertical (bigger node).
-- **Communication**: Sync (HTTP/gRPC) vs Async (Messsage Bus).
+- **Communication**: Sync (HTTP/gRPC) vs Async (Message Bus).
 - **Patterns**: CQRS, Outbox, and Circuit Breaker for reliability.
+- **Method**: Requirements → numbers → diagram → attack your design.
+- **Money**: Idempotency keys and no dual writes.
   `,
   summary: "সিস্টেম ডিজাইন লেভেলে কাজ করতে হলে আপনাকে কোড ছাড়িয়ে ইনফ্রাস্ট্রাকচার এবং নেটওয়ার্ক সম্পর্কে ভাবতে হবে।"
 };

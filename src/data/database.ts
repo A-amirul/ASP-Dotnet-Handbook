@@ -1,7 +1,7 @@
 export const databaseData = {
   id: 'database',
-  title: 'Entity Framework & SQL Server',
-  description: 'Master Object-Relational Mapping (ORM) and low-level SQL optimization for high-performance applications.',
+  title: 'Entity Framework Core',
+  description: 'Tracking, N+1, concurrency, ExecuteUpdate, Dapper, and the EF decisions seniors make in production.',
   sections: [
     {
       topic: "DbContext & Change Tracking",
@@ -125,13 +125,120 @@ export const databaseData = {
 var users = await db.QueryAsync<User>("GetUsers",
     new { status = 1 },
     commandType: CommandType.StoredProcedure);`
+    },
+    {
+      topic: "Relationships, Include vs Projection, Concurrency",
+      difficulty: 'senior',
+      english: "EF Core maps one-to-one, one-to-many, and many-to-many with navigation properties. Include/ThenInclude loads full graphs and is easy to over-fetch. Projection (Select to DTO) is usually faster for reads. Optimistic concurrency uses a RowVersion/xmin token so two users updating the same row do not silently overwrite. SaveChanges generates tracked INSERT/UPDATE/DELETE; ExecuteUpdate/ExecuteDelete run set-based SQL without loading entities.",
+      bangla: 'Include পুরো গ্রাফ লোড করে। রিডে DTO প্রজেকশন ভালো। দুই ইউজার এক রো আপডেটে RowVersion লাগে। ExecuteUpdate ট্র্যাকিং ছাড়া সেট-বেসড SQL।',
+      details: `
+| Technique | Loads entities | Tracking | Best for |
+| :--- | :--- | :--- | :--- |
+| Include | Yes, full graph | Default on | Updating a graph |
+| Select DTO | Only chosen columns | No | API GET |
+| Explicit Load | On demand | Yes | Rare branches |
+| Lazy loading | Hidden queries | Yes | Often N+1 — avoid in APIs |
+| ExecuteUpdate | No | No | Bulk update |
+
+### Also know
+- Global query filters (soft delete, tenant)
+- Shadow properties, value converters, owned entities
+- Compiled queries for hot paths
+- Fluent API over data annotations for non-trivial mapping
+- DbContext: Scoped per request; IDbContextFactory for workers
+      `,
+      commonMistakes: [
+        'Lazy loading enabled in a web API — silent N+1.',
+        'Include of huge collections then serializing entities (circular refs).',
+        'Catching DbUpdateConcurrencyException and retrying blindly without reload.',
+      ],
+      bestPractices: [
+        'AsNoTracking + projection for reads.',
+        'RowVersion on every concurrently edited aggregate.',
+        'Transactions around multi-entity invariants; do not open a transaction per row in a loop.',
+      ],
+      interviewQs: [
+        {
+          q: 'Include vs projection — which should an API GET use?',
+          a: 'Projection. Include materializes full entities, tracks them unless AsNoTracking, and often over-fetches columns and graphs you will not return. Select to a DTO translates to a narrow SQL SELECT, skips tracking, and avoids circular JSON. Use Include when you intend to mutate the graph and SaveChanges.',
+          bangla: 'GET এ DTO Select করুন। Include আপডেটের জন্য।',
+          followUp: 'When is AsSplitQuery necessary?',
+          difficulty: 'senior',
+        },
+        {
+          q: 'SaveChanges vs ExecuteUpdate?',
+          a: 'SaveChanges is the Unit of Work: it sends changes EF already tracked, runs interceptors, and updates tracked instances. ExecuteUpdate is a LINQ-to-SQL bulk statement — no tracking, no per-entity events, immediate SQL. Use ExecuteUpdate for "deactivate all expired sessions". Do not mix assuming tracked entities are updated in memory — they are not.',
+          bangla: 'SaveChanges ট্র্যাক করা চেঞ্জ। ExecuteUpdate সরাসরি SQL, মেমোরিতে এন্টিটি আপডেট হয় না।',
+          difficulty: 'senior',
+        },
+        {
+          q: 'How do you stop lost updates when two users edit the same order?',
+          a: 'Optimistic concurrency: a RowVersion column. EF adds it to the UPDATE WHERE clause. If rows affected is 0, DbUpdateConcurrencyException. Reload, merge or reject, retry. Pessimistic locking (UPDLOCK) is for short critical sections and can deadlock under load. For checkouts, also use idempotency keys so retries do not double-charge.',
+          bangla: 'RowVersion দিয়ে optimistic concurrency। কনফ্লিক্টে রিলোড বা রিজেক্ট।',
+          difficulty: 'expert',
+        },
+      ],
+      practice: 'Add a byte[] RowVersion to Order, handle DbUpdateConcurrencyException in an update endpoint.',
+      code: `public class Order
+{
+    public int Id { get; set; }
+    public decimal Total { get; set; }
+    [Timestamp] public byte[] RowVersion { get; set; } = [];
+}
+
+await _db.Orders
+    .Where(o => o.Status == Status.Expired)
+    .ExecuteUpdateAsync(s => s.SetProperty(o => o.Status, Status.Closed), ct);`,
+      sql: `-- Optimistic concurrency token
+ALTER TABLE Orders ADD RowVersion rowversion NOT NULL;`,
     }
   ],
+  quickRevision: {
+    concepts: [
+      'DbContext is Unit of Work + identity map',
+      'AsNoTracking for reads',
+      'N+1 vs Include vs projection vs SplitQuery',
+      'Change tracker snapshots',
+      'RowVersion / DbUpdateConcurrencyException',
+      'ExecuteUpdate vs SaveChanges',
+      'Global query filters',
+      'Dapper for heavy reads',
+      'Parameterized SQL only',
+      'Scoped DbContext, never Singleton',
+    ],
+    questions: [
+      'ToList vs AsEnumerable?',
+      'How does change tracking work?',
+      'Why is Dapper faster?',
+      'Include vs Select DTO?',
+      'SaveChanges vs ExecuteUpdate?',
+      'How do you fix N+1?',
+      'What is a global query filter?',
+      'Why not lazy loading in APIs?',
+      'How do you handle lost updates?',
+      'EF Core vs Dapper — when each?',
+    ],
+    mistakes: [
+      'Tracking for display-only queries',
+      'New DbContext inside a loop',
+      'String-concatenated SQL',
+      'Serializing tracked entity graphs',
+      'Ignoring concurrency tokens',
+    ],
+    scenarios: [
+      'GET /orders became 10x slower after adding Include',
+      'Two admins overwrite each other\'s edits',
+      'Soft-delete filter hiding rows in admin reports',
+      'Worker using a disposed scoped context',
+      'Bulk deactivate 2 million rows via tracked SaveChanges',
+    ],
+  },
   revisionSummary: `
 - **Performance**: Use .AsNoTracking() and Projection (.Select).
 - **Relational**: Solve N+1 with .Include() or .AsSplitQuery().
 - **Hybrid**: Use Dapper for high-speed reads, EF for standard CRUD.
 - **Security**: Never use string interpolation for SQL; use Parameters.
+- **Concurrency**: RowVersion on aggregates people edit concurrently.
   `,
   summary: "ডাটাবেজ ম্যানেজমেন্টে ইএফ কোর এবং ড্যাপারের সঠিক কম্বিনেশন ব্যবহার করা একজন প্রফেশনাল ডেভেলপারের বড় গুণ।"
 };

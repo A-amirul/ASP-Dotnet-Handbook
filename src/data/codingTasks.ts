@@ -550,6 +550,38 @@ private void Generate(int start, int[] nums, List<int> current, List<List<int>> 
     }
     return dp[amount] > amount ? -1 : dp[amount];
 }`
+    },
+    {
+      title: "41. Senior: Deduplicate concurrent checkout (idempotency)",
+      english: "Two identical Pay requests arrive. Return the same payment result without charging twice. Approach: store Idempotency-Key with request hash. Complexity: O(1) lookup. Follow-up: webhook retries.",
+      bangla: "একই পেমেন্ট দুবার চার্জ হবে না — Idempotency-Key সেভ করুন।",
+      code: `public async Task<PaymentResult> PayAsync(PayRequest req, string key, CancellationToken ct)
+{
+    var existing = await _db.IdempotencyKeys.FindAsync([key], ct);
+    if (existing is not null) return JsonSerializer.Deserialize<PaymentResult>(existing.Response)!;
+
+    var result = await _gateway.ChargeAsync(req, key, ct);
+    _db.IdempotencyKeys.Add(new() { Key = key, Response = JsonSerializer.Serialize(result) });
+    await _db.SaveChangesAsync(ct);
+    return result;
+}`
+    },
+    {
+      title: "42. Senior: Sliding window rate limit (in-memory sketch)",
+      english: "Allow N requests per window per user. Production would use Redis INCR + TTL or a sliding sorted set. Follow-up: distributed instances.",
+      bangla: "ইউজার প্রতি উইন্ডোতে N রিকোয়েস্ট — প্রোডে Redis।",
+      code: `public bool Allow(string userId, int limit, TimeSpan window)
+{
+    var now = DateTimeOffset.UtcNow;
+    var q = _hits.GetOrAdd(userId, _ => new Queue<DateTimeOffset>());
+    lock (q)
+    {
+        while (q.Count > 0 && now - q.Peek() > window) q.Dequeue();
+        if (q.Count >= limit) return false;
+        q.Enqueue(now);
+        return true;
+    }
+}`
     }
   ],
   revisionSummary: `
@@ -558,6 +590,7 @@ private void Generate(int start, int[] nums, List<int> current, List<List<int>> 
 2. **Performance**: Avoid N+1 and use Caching where needed.
 3. **User Experience**: Use Async/Background tasks for long operations.
 4. **Security**: Validate inputs and handle global exceptions clean.
+5. **Senior follow-up**: complexity, idempotency, concurrency, what breaks at 10k RPS.
 `,
   summary: "প্র্যাকটিক্যাল মেশিন টেস্টে সফল হতে হলে আপনাকে শুধু কোড লিখলে হবে না, ক্লিন কোড এবং পারফরম্যান্স অপ্টিমাইজেশন নিশ্চিত করতে হবে।"
 };

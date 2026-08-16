@@ -26,31 +26,47 @@ import { cn } from './lib/utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { handbookData } from './data';
+import { NAV_GROUPS } from './data/types';
 import { AlertCircle, CheckCircle2, ListChecks } from 'lucide-react';
+
+const DIFFICULTY_LABEL: Record<string, { label: string; className: string }> = {
+  junior: { label: 'Junior', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  mid: { label: 'Mid', className: 'bg-sky-50 text-sky-700 border-sky-200' },
+  senior: { label: 'Senior', className: 'bg-amber-50 text-amber-800 border-amber-200' },
+  expert: { label: 'Expert', className: 'bg-rose-50 text-rose-700 border-rose-200' },
+};
 
 const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) => {
   const location = useLocation();
+  const byId = Object.fromEntries(handbookData.map(item => [item.id, item]));
+  const groupedIds = new Set(NAV_GROUPS.flatMap(g => g.ids));
+  const ungrouped = handbookData.filter(item => !groupedIds.has(item.id));
 
-  const navItems = [
-    { id: 'home', title: 'Roadmap & Introduction', icon: LayoutDashboard, path: '/' },
-    ...handbookData.map(item => ({
-      id: item.id,
-      title: item.title,
-      icon: item.id === 'basics' ? ListChecks :
-        item.id === 'csharp' ? Code2 :
-          item.id === 'aspnet' ? Server :
-          item.id === 'apidocs' ? BookOpen :
-            item.id === 'webapi' ? Globe :
-              item.id === 'database' ? Database :
-                item.id === 'frontend' ? Layers :
-                  item.id === 'systemdesign' ? ShieldCheck : Terminal,
-      path: `/${item.id}`
-    }))
-  ];
+  const NavLink = ({ id, title, index }: { id: string; title: string; index: string }) => (
+    <Link
+      to={id === 'home' ? '/' : `/${id}`}
+      onClick={() => { if (window.innerWidth < 1024) toggle(); }}
+      className={cn(
+        "flex items-center gap-2 px-3 py-2 transition-all text-[13px] font-medium rounded-lg",
+        location.pathname === (id === 'home' ? '/' : `/${id}`)
+          ? "bg-brand-cyan-subtle text-brand-cyan shadow-sm"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      )}
+    >
+      <span className={cn(
+        "text-[9px] font-mono w-5 shrink-0",
+        location.pathname === (id === 'home' ? '/' : `/${id}`) ? "text-brand-cyan" : "opacity-40"
+      )}>
+        {index}
+      </span>
+      <span className="flex-1 leading-snug">{title}</span>
+    </Link>
+  );
+
+  let counter = 0;
 
   return (
     <>
-      {/* Mobile Backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-[#00000080] z-40 lg:hidden"
@@ -71,40 +87,56 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
           </button>
           <div className="p-6 bg-slate-subtle border-b border-slate-100 text-center">
             <h1 className="font-bold text-brand-cyan text-xl tracking-tighter">DOTNET </h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Interview Handbook</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Senior Interview Handbook</p>
           </div>
 
-          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.id}
-                to={item.path}
-                onClick={() => { if (window.innerWidth < 1024) toggle(); }}
-                className={cn(
-                  "flex items-center gap-3 p-3 transition-all text-sm font-medium rounded-lg",
-                  location.pathname === item.path
-                    ? "bg-brand-cyan-subtle text-brand-cyan shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                )}
-              >
-                <span className={cn(
-                  "text-[10px] font-mono mr-1",
-                  location.pathname === item.path ? "text-brand-cyan" : "opacity-40"
-                )}>
-                  {navItems.findIndex(n => n.id === item.id).toString().padStart(2, '0')}
-                </span>
-                <span className="flex-1">{item.title}</span>
-                <ChevronRight size={14} className={cn(
-                  "ml-auto transition-all",
-                  location.pathname === item.path ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1"
-                )} />
-              </Link>
-            ))}
+          <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4">
+            <NavLink id="home" title="Roadmap & Introduction" index="00" />
+            {NAV_GROUPS.map((group) => {
+              const items = group.ids.map(id => byId[id]).filter(Boolean);
+              if (!items.length) return null;
+              return (
+                <div key={group.title}>
+                  <div className="px-3 mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    {group.title}
+                  </div>
+                  <div className="space-y-0.5">
+                    {items.map((item) => {
+                      counter += 1;
+                      return (
+                        <NavLink
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          index={counter.toString().padStart(2, '0')}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            {ungrouped.length > 0 && (
+              <div>
+                <div className="px-3 mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">More</div>
+                {ungrouped.map((item) => {
+                  counter += 1;
+                  return (
+                    <NavLink
+                      key={item.id}
+                      id={item.id}
+                      title={item.title}
+                      index={counter.toString().padStart(2, '0')}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </nav>
 
           <div className="p-6 mt-auto border-t border-slate-100">
             <div className="text-[11px] uppercase tracking-widest text-center text-slate-400 font-bold">
-              Ver 2.4 | Senior Guide
+              Ver 3.0 | Senior Engineer
             </div>
           </div>
         </div>
@@ -113,8 +145,9 @@ const Sidebar = ({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) =>
   );
 };
 
-const InterviewQItem = ({ q, a, bangla }: { q: string; a: string; bangla?: string }) => {
+const InterviewQItem = ({ q, a, bangla, followUp, difficulty }: { q: string; a: string; bangla?: string; followUp?: string; difficulty?: string }) => {
   const [open, setOpen] = useState(false);
+  const badge = difficulty ? DIFFICULTY_LABEL[difficulty] : undefined;
   return (
     <li className={cn("rounded-lg transition-colors", open && "bg-white shadow-sm border border-slate-100")}>
       <button
@@ -126,6 +159,11 @@ const InterviewQItem = ({ q, a, bangla }: { q: string; a: string; bangla?: strin
       >
         <span className="text-brand-cyan font-black shrink-0 text-[11px] mt-px leading-tight">Q:</span>
         <span className="text-[12px] text-slate-800 font-semibold flex-1 leading-snug">{q}</span>
+        {badge && (
+          <span className={cn("text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0", badge.className)}>
+            {badge.label}
+          </span>
+        )}
         <ChevronRight
           size={13}
           className={cn(
@@ -148,6 +186,12 @@ const InterviewQItem = ({ q, a, bangla }: { q: string; a: string; bangla?: strin
                 <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">বাংলা নোট</span>
               </div>
               <p className="text-[12px] text-indigo-800 leading-relaxed">{bangla}</p>
+            </div>
+          )}
+          {followUp && (
+            <div className="rounded-lg bg-amber-50 border border-amber-100 p-3">
+              <div className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1">Follow-up</div>
+              <p className="text-[12px] text-amber-900 leading-relaxed">{followUp}</p>
             </div>
           )}
         </div>
@@ -260,8 +304,9 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
       return {
         ...initialData,
         tasks: initialData.tasks.filter((t: any) =>
-          t.title.toLowerCase().includes(query) ||
-          t.description.toLowerCase().includes(query)
+          `${t.title ?? ''} ${t.description ?? ''} ${t.english ?? ''} ${t.bangla ?? ''} ${t.code ?? ''}`
+            .toLowerCase()
+            .includes(query)
         )
       };
     }
@@ -274,7 +319,11 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         .map((sub: any) => `${sub.title ?? ''} ${sub.code ?? ''}`.toLowerCase())
         .join(' ');
       const tipsHay = (s.tips ?? []).join(' ').toLowerCase();
-      const blob = `${topic} ${english} ${bangla} ${subHay} ${tipsHay}`;
+      const qsHay = (s.interviewQs ?? [])
+        .map((item: any) => typeof item === 'string' ? item : `${item.q ?? ''} ${item.a ?? ''} ${item.followUp ?? ''}`)
+        .join(' ')
+        .toLowerCase();
+      const blob = `${topic} ${english} ${bangla} ${subHay} ${tipsHay} ${qsHay}`;
       return blob.includes(query);
     };
 
@@ -341,7 +390,14 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                 <span className="min-w-3 min-h-3 w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200 shrink-0"></span>
                 {sectionTitle}
               </h3>
-              <span className="text-[10px] sm:text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-2 sm:px-3 py-1 rounded w-fit">Module 0{idx + 1}</span>
+              <div className="flex items-center gap-2">
+                {section.difficulty && DIFFICULTY_LABEL[section.difficulty] && (
+                  <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded border", DIFFICULTY_LABEL[section.difficulty].className)}>
+                    {DIFFICULTY_LABEL[section.difficulty].label}
+                  </span>
+                )}
+                <span className="text-[10px] sm:text-xs text-brand-cyan font-bold font-mono bg-brand-cyan-subtle px-2 sm:px-3 py-1 rounded w-fit">Module 0{idx + 1}</span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 mb-8 sm:mb-10">
@@ -463,7 +519,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
                   {section.interviewQs?.map((item: any, i: number) => (
                     typeof item === 'string'
                       ? <li key={i} className="text-xs text-slate-700 font-semibold flex gap-3 px-3 py-2"><span className="text-brand-cyan font-black">Q:</span> {item}</li>
-                      : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} />
+                      : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} followUp={item.followUp} difficulty={item.difficulty} />
                   ))}
                 </ul>
               </div>
@@ -485,6 +541,43 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
         })}
       </div>
 
+      {data.quickRevision && (
+        <div className="mt-8 grid sm:grid-cols-2 gap-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-cyan mb-3">10 key concepts</h4>
+            <ul className="space-y-2">
+              {(data.quickRevision.concepts ?? []).map((c: string, i: number) => (
+                <li key={i} className="text-xs text-slate-700 font-medium">• {c}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-cyan mb-3">10 interview questions</h4>
+            <ul className="space-y-2">
+              {(data.quickRevision.questions ?? []).map((c: string, i: number) => (
+                <li key={i} className="text-xs text-slate-700 font-medium">• {c}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-red-subtle border border-red-100 rounded-xl p-5">
+            <h4 className="text-[11px] font-black uppercase tracking-widest text-red-600 mb-3">5 common mistakes</h4>
+            <ul className="space-y-2">
+              {(data.quickRevision.mistakes ?? []).map((c: string, i: number) => (
+                <li key={i} className="text-xs text-red-900 font-medium">• {c}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-slate-900 text-white rounded-xl p-5">
+            <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-cyan mb-3">5 senior scenarios</h4>
+            <ul className="space-y-2">
+              {(data.quickRevision.scenarios ?? []).map((c: string, i: number) => (
+                <li key={i} className="text-xs text-slate-200 font-medium">• {c}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {data.interviewQuestions?.length ? (
         <div className="mt-12 bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
           <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -494,7 +587,7 @@ const SectionRenderer = ({ data: initialData }: { data: any }) => {
             {data.interviewQuestions.map((item: any, i: number) => (
               typeof item === 'string'
                 ? <li key={i} className="text-sm text-slate-700 font-semibold flex gap-3 px-3 py-2"><span className="text-brand-cyan font-black tabular-nums">{i + 1}.</span>{item}</li>
-                : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} />
+                : <InterviewQItem key={i} q={item.q} a={item.a} bangla={item.bangla} followUp={item.followUp} difficulty={item.difficulty} />
             ))}
           </ul>
         </div>
@@ -596,7 +689,7 @@ const Home = () => {
             <span className="text-slate-900 italic font-black">DOTNET ARCHITECT</span>
           </h1>
           <p className="text-base md:text-lg text-indigo-50 mb-10 md:mb-12 max-w-2xl font-bold leading-relaxed opacity-90">
-            A specialized handbook for professionals targeting 5+ years seniority. Master the core internals, design patterns, and system architecture questions that top firms demand.
+            A specialized handbook for Senior .NET / Senior Software Engineer interviews. Study Why → How → Trade-off → Failure → Scale → Security — not just definitions.
           </p>
           <div className="flex flex-wrap gap-4 mb-10">
             <button
@@ -626,18 +719,26 @@ const Home = () => {
       <section className="space-y-8 md:space-y-12">
         <div className="flex items-center justify-between border-b-2 border-slate-100 pb-4">
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">The Mastery Roadmap</h2>
-          <span className="text-[9px] md:text-[10px] font-bold font-mono text-brand-cyan uppercase tracking-widest bg-brand-cyan-subtle px-2 py-1 rounded">2026 Edition</span>
+          <span className="text-[9px] md:text-[10px] font-bold font-mono text-brand-cyan uppercase tracking-widest bg-brand-cyan-subtle px-2 py-1 rounded">2026 Senior Edition</span>
         </div>
+        <p className="text-sm text-slate-600 font-medium">
+          Study in order. Each card is a phase. Answers use Why → How → Trade-off → Failure. Difficulty badges: Junior, Mid, Senior, Expert.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[
-            { step: 1, id: 'csharp', title: 'Adv. C# Mastery', desc: 'Internal workings, memory management & async patterns.' },
-            { step: 2, id: 'aspnet', title: 'ASP.NET Architecture', desc: 'Middleware, Request lifecycle & Security pipelines.' },
-            { step: 3, id: 'mvcore', title: 'MVC / Core Interview', desc: 'Lifecycle, filters, auth, CORS, logging, and versioning strategy.' },
-            { step: 4, id: 'database', title: 'Data Infrastructure', desc: 'Optimization, EF Core internals & Query tuning.' },
-            { step: 5, id: 'systemdesign', title: 'System Design', desc: 'Microservices, Scalability & Cloud Architecture.' },
-            { step: 6, id: 'tasks', title: 'Machine Tasks', desc: 'Real-world coding challenges and design patterns.' },
-            { step: 7, id: 'apidocs', title: 'API Design & Documentation', desc: 'Design clean, well-documented REST and GraphQL APIs.' },
-            { step: 8, id: 'webapi', title: 'Web API Design', desc: 'REST principles, versioning, and secure API architecture.' }
+            { step: 1, id: 'guide', title: 'How to Use + Mindset', desc: 'Study order, senior thinking model, and interview strategy.' },
+            { step: 2, id: 'csharp', title: 'C# & OOP', desc: 'Types, memory, SOLID, and language internals.' },
+            { step: 3, id: 'linq', title: 'LINQ Internals', desc: 'Deferred execution, IQueryable, and query performance.' },
+            { step: 4, id: 'async', title: 'Async & Threads', desc: 'Task, locks, deadlocks, and high-concurrency APIs.' },
+            { step: 5, id: 'aspnet', title: 'ASP.NET Core', desc: 'Pipeline, filters, DI, auth, and request lifecycle.' },
+            { step: 6, id: 'database', title: 'EF Core & SQL', desc: 'Tracking, N+1, indexes, isolation, and query plans.' },
+            { step: 7, id: 'architecture', title: 'Architecture', desc: 'Clean Architecture, CQRS, and when patterns become overkill.' },
+            { step: 8, id: 'security', title: 'Security', desc: 'JWT, OWASP, secrets, and production hardening.' },
+            { step: 9, id: 'distributed', title: 'Distributed Systems', desc: 'Microservices, messaging, Redis, and resilience.' },
+            { step: 10, id: 'systemdesign', title: 'System Design', desc: 'End-to-end designs with trade-offs and failure modes.' },
+            { step: 11, id: 'scenarios', title: 'Production Scenarios', desc: '100+ senior incidents: investigate, fix, prevent.' },
+            { step: 12, id: 'revision', title: 'Last-Day Revision', desc: 'Compact checklist before the interview.' },
+            { step: 13, id: 'tasks', title: 'Coding + Machine Tests', desc: 'Senior coding problems and practical challenges.' }
           ].map((item) => (
             <Link
               key={item.step}
