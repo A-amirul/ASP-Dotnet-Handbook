@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CI/CD Playbook — LinkedIn Carousel</title>
+  <style>
+    @page {
+      size: 1080px 1350px;
+      margin: 0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #070b14;
+      color: #f8fafc;
+      font-family: "Segoe UI", "Arial", sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+      padding: 72px 80px 88px;
+    }
+
+    .slide:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 78%);
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+    }
+
+    .orb-cyan { width: 420px; height: 420px; background: rgba(34, 211, 238, 0.16); top: -120px; right: -80px; }
+    .orb-violet { width: 380px; height: 380px; background: rgba(139, 92, 246, 0.18); bottom: 80px; left: -120px; }
+    .orb-green { width: 300px; height: 300px; background: rgba(52, 211, 153, 0.12); top: 40%; right: -60px; }
+
+    .accent-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: linear-gradient(180deg, #22d3ee 0%, #8b5cf6 100%);
+    }
+
+    .top {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.22em;
+      font-size: 18px;
+      font-weight: 700;
+      color: #22d3ee;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 12px #22d3ee;
+    }
+
+    .counter {
+      font-size: 20px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      position: relative;
+      font-size: 118px;
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      position: relative;
+      font-size: 58px;
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      max-width: 920px;
+    }
+
+    .subtitle {
+      position: relative;
+      margin-top: 28px;
+      font-size: 32px;
+      line-height: 1.4;
+      color: #cbd5e1;
+      font-weight: 400;
+      max-width: 860px;
+    }
+
+    .footer {
+      position: absolute;
+      left: 80px;
+      right: 80px;
+      bottom: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #64748b;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pills {
+      position: relative;
+      display: flex;
+      gap: 12px;
+      margin-top: 56px;
+    }
+
+    .pill {
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      background: rgba(34, 211, 238, 0.08);
+      color: #a5f3fc;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .flow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 72px;
+    }
+
+    .flow-step {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      border-radius: 22px;
+      padding: 26px 22px;
+      text-align: center;
+    }
+
+    .flow-step span {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #22d3ee;
+      margin-bottom: 10px;
+    }
+
+    .flow-step strong {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .flow-arrow {
+      color: #22d3ee;
+      font-size: 32px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .swipe {
+      position: relative;
+      margin-top: 64px;
+      font-size: 24px;
+      color: #22d3ee;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .list {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin-top: 48px;
+    }
+
+    .item {
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 22px;
+      padding: 26px 28px;
+    }
+
+    .num {
+      flex: 0 0 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      background: linear-gradient(180deg, #22d3ee, #6366f1);
+      color: #071018;
+    }
+
+    .item h3 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .item p {
+      font-size: 22px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .split {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 28px;
+      padding: 36px 32px;
+      min-height: 420px;
+    }
+
+    .card.wide {
+      grid-column: 1 / -1;
+      min-height: 0;
+      margin-top: 0;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #22d3ee;
+      margin-bottom: 16px;
+    }
+
+    .tag.violet { color: #c4b5fd; }
+    .tag.green { color: #6ee7b7; }
+
+    .card h3 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .card p {
+      font-size: 24px;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+
+    .steps {
+      position: relative;
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px 24px;
+    }
+
+    .rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #22d3ee;
+      background: #0b1220;
+      color: #22d3ee;
+      font-weight: 800;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .line {
+      width: 2px;
+      flex: 1;
+      min-height: 28px;
+      background: linear-gradient(#22d3ee, #8b5cf6);
+      opacity: 0.55;
+    }
+
+    .step-body {
+      padding: 8px 0 28px;
+    }
+
+    .step-body strong {
+      display: block;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .step-body span {
+      font-size: 22px;
+      color: #94a3b8;
+    }
+
+    .benefits {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 44px;
+    }
+
+    .benefit {
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 24px;
+      padding: 28px 26px 26px;
+      min-height: 210px;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 18px;
+      background: rgba(34, 211, 238, 0.12);
+    }
+
+    .benefit h3 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .benefit p {
+      font-size: 20px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .rules {
+      position: relative;
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .rule {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 20px;
+      padding: 22px 24px;
+    }
+
+    .rule-n {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #0b1220;
+      border: 2px solid #8b5cf6;
+      color: #c4b5fd;
+      font-weight: 800;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rule p {
+      font-size: 26px;
+      font-weight: 650;
+      line-height: 1.3;
+    }
+
+    .terminal {
+      position: relative;
+      margin-top: 40px;
+      background: #0b1220;
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #f87171; }
+    .yellow { background: #fbbf24; }
+    .green { background: #34d399; }
+    .term-title {
+      margin-left: 12px;
+      color: #64748b;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .term-body {
+      padding: 28px 32px 32px;
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+      font-size: 26px;
+      line-height: 1.7;
+    }
+
+    .c-muted { color: #64748b; }
+    .c-cyan { color: #22d3ee; }
+    .c-white { color: #e2e8f0; }
+    .c-green { color: #34d399; }
+
+    .tools {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .tool {
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid rgba(139, 92, 246, 0.28);
+      color: #ddd6fe;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .cta-box {
+      position: relative;
+      margin-top: 48px;
+      padding: 40px 36px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.18));
+      border: 1px solid rgba(34, 211, 238, 0.28);
+    }
+
+    .cta-box h3 {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      font-size: 24px;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .big-line {
+      position: relative;
+      margin-top: 28px;
+      font-size: 40px;
+      font-weight: 800;
+      color: #22d3ee;
+      letter-spacing: -0.02em;
+    }
+  </style>
+</head>
+<body>
+  <!-- 01 COVER -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-violet"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> DevOps series</div>
+      <div class="counter">01 / 08</div>
+    </div>
+    <h1>CI/CD</h1>
+    <p class="subtitle">Ship on every commit.<br>Not once a quarter.</p>
+    <div class="pills">
+      <span class="pill">8 slides</span>
+      <span class="pill">3 min read</span>
+      <span class="pill">.NET ready</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><span>01</span><strong>Git push</strong></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span>02</span><strong>Green build</strong></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span>03</span><strong>Production</strong></div>
+    </div>
+    <p class="swipe">Swipe for the playbook →</p>
+    <div class="footer"><span>CI/CD Playbook</span><span>DevOps / .NET</span></div>
+  </section>
+
+  <!-- 02 PAIN -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-violet"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> The old way</div>
+      <div class="counter">02 / 08</div>
+    </div>
+    <h2>Stop deploying<br>like it’s 2014.</h2>
+    <div class="list">
+      <div class="item">
+        <div class="num">01</div>
+        <div>
+          <h3>“Works on my machine”</h3>
+          <p>Production is the first environment that actually counts.</p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">02</div>
+        <div>
+          <h3>One person knows the steps</h3>
+          <p>If they’re on leave, the release waits. That’s a risk, not a process.</p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">03</div>
+        <div>
+          <h3>Friday deploys. Weekend rollbacks.</h3>
+          <p>Manual releases feel fast — until they aren’t.</p>
+        </div>
+      </div>
+      <div class="item">
+        <div class="num">04</div>
+        <div>
+          <h3>Users find the bugs first</h3>
+          <p>Tests that run “sometimes” are not a safety net.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>CI/CD Playbook</span><span>Problem</span></div>
+  </section>
+
+  <!-- 03 DEFINITION -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> Definition</div>
+      <div class="counter">03 / 08</div>
+    </div>
+    <h2>CI/CD in one slide.</h2>
+    <div class="split" style="margin-top: 40px;">
+      <div class="card">
+        <span class="tag">CI</span>
+        <h3>Continuous Integration</h3>
+        <p>Every push is built and tested automatically. Small merges. Fast feedback. Broken main is visible in minutes — not days.</p>
+      </div>
+      <div class="card">
+        <span class="tag violet">CD</span>
+        <h3>Continuous Delivery</h3>
+        <p>Every green build is always release-ready. Deploy is a decision, not a project. Continuous Deployment ships it automatically.</p>
+      </div>
+    </div>
+    <div class="card wide" style="margin-top: 24px; min-height: 0; padding: 32px;">
+      <span class="tag green">The point</span>
+      <p style="font-size: 28px; color: #f8fafc; font-weight: 650;">It’s not the YAML. It’s a shorter, safer path from idea → users.</p>
+    </div>
+    <div class="footer"><span>CI/CD Playbook</span><span>What it is</span></div>
+  </section>
+
+  <!-- 04 PIPELINE -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-green"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> The system</div>
+      <div class="counter">04 / 08</div>
+    </div>
+    <h2>Keep the pipeline boring.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="rail"><div class="circle">1</div><div class="line"></div></div>
+        <div class="step-body"><strong>Commit</strong><span>Small PR. Clear change. One reason to merge.</span></div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="circle">2</div><div class="line"></div></div>
+        <div class="step-body"><strong>Restore &amp; build</strong><span>Same compiler, same flags, every time.</span></div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="circle">3</div><div class="line"></div></div>
+        <div class="step-body"><strong>Test</strong><span>Unit + integration. Red build never ships.</span></div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="circle">4</div><div class="line"></div></div>
+        <div class="step-body"><strong>Scan</strong><span>Secrets, vulnerabilities, quality gates.</span></div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="circle">5</div><div class="line"></div></div>
+        <div class="step-body"><strong>Publish artifact</strong><span>Build once. Promote the same package.</span></div>
+      </div>
+      <div class="step">
+        <div class="rail"><div class="circle">6</div></div>
+        <div class="step-body"><strong>Deploy &amp; verify</strong><span>Staging → prod. Health checks. Easy rollback.</span></div>
+      </div>
+    </div>
+    <div class="footer"><span>CI/CD Playbook</span><span>Pipeline</span></div>
+  </section>
+
+  <!-- 05 BENEFITS -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> Payoff</div>
+      <div class="counter">05 / 08</div>
+    </div>
+    <h2>What you actually get.</h2>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="icon">⚡</div>
+        <h3>Minutes, not weeks</h3>
+        <p>A failed test on the PR is cheaper than a failed Friday night.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">🔁</div>
+        <h3>One path to prod</h3>
+        <p>Dev, staging, and production follow the same pipeline. No snowflake servers.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">🛡️</div>
+        <h3>Fewer war rooms</h3>
+        <p>You know what shipped, who approved it, and which artifact is live.</p>
+      </div>
+      <div class="benefit">
+        <div class="icon">↩️</div>
+        <h3>Rollback is a click</h3>
+        <p>Redeploy the last good artifact. Not a meeting. Not a hero.</p>
+      </div>
+    </div>
+    <div class="footer"><span>CI/CD Playbook</span><span>Why it matters</span></div>
+  </section>
+
+  <!-- 06 RULES -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-violet"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> Non-negotiables</div>
+      <div class="counter">06 / 08</div>
+    </div>
+    <h2>5 rules that keep pipelines honest.</h2>
+    <div class="rules">
+      <div class="rule"><div class="rule-n">1</div><p>No merge without a green test gate.</p></div>
+      <div class="rule"><div class="rule-n">2</div><p>Secrets live in a vault — never in YAML or git.</p></div>
+      <div class="rule"><div class="rule-n">3</div><p>Build once. Deploy that same artifact everywhere.</p></div>
+      <div class="rule"><div class="rule-n">4</div><p>Keep it fast. If it’s over 10 minutes, people skip it.</p></div>
+      <div class="rule"><div class="rule-n">5</div><p>Production always has a one-step undo.</p></div>
+    </div>
+    <div class="footer"><span>CI/CD Playbook</span><span>Rules</span></div>
+  </section>
+
+  <!-- 07 DOTNET -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> .NET starter</div>
+      <div class="counter">07 / 08</div>
+    </div>
+    <h2>A pipeline that doesn’t overthink.</h2>
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot red"></span>
+        <span class="term-dot yellow"></span>
+        <span class="term-dot green"></span>
+        <span class="term-title">ci.yml · pull_request + main</span>
+      </div>
+      <div class="term-body">
+        <div><span class="c-muted"># every PR, every merge</span></div>
+        <div><span class="c-cyan">→</span> <span class="c-white">dotnet restore</span></div>
+        <div><span class="c-cyan">→</span> <span class="c-white">dotnet build --no-restore</span></div>
+        <div><span class="c-cyan">→</span> <span class="c-white">dotnet test --no-build</span></div>
+        <div><span class="c-cyan">→</span> <span class="c-white">dotnet publish -c Release</span></div>
+        <div><span class="c-green">→ deploy the artifact</span></div>
+      </div>
+    </div>
+    <div class="tools">
+      <span class="tool">GitHub Actions</span>
+      <span class="tool">Azure Pipelines</span>
+      <span class="tool">GitLab CI</span>
+      <span class="tool">Jenkins</span>
+    </div>
+    <p class="subtitle" style="font-size: 24px; margin-top: 28px;">Pick one tool. Start this week. The command is the same.</p>
+    <div class="footer"><span>CI/CD Playbook</span><span>.NET</span></div>
+  </section>
+
+  <!-- 08 CTA -->
+  <section class="slide">
+    <div class="accent-bar"></div>
+    <div class="bg-grid"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-violet"></div>
+    <div class="top">
+      <div class="eyebrow"><span class="dot"></span> Start here</div>
+      <div class="counter">08 / 08</div>
+    </div>
+    <h2>Your first CI/CD win.</h2>
+    <p class="subtitle">Don’t automate everything.<br>Automate build + test on every PR.</p>
+    <p class="big-line">That’s 80% of the value.</p>
+    <div class="cta-box">
+      <h3>This week</h3>
+      <p>1. Green checks on every pull request.<br>2. Then add a deploy to staging.<br>3. Then production — with a rollback.</p>
+    </div>
+    <p class="swipe" style="margin-top: 40px;">Save this · Share with your team</p>
+    <div class="footer"><span>CI/CD Playbook</span><span>Follow for more DevOps</span></div>
+  </section>
+</body>
+</html>
