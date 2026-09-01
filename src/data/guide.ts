@@ -77,9 +77,12 @@ export const guideData = {
 | 8 | Microservices | Saga, outbox, when NOT to split |
 | 9 | Docker & Cloud | Multi-stage images, Key Vault, health checks |
 | 10 | System Design | Requirements → bottlenecks → trade-offs |
-| 11 | Coding | Arrays/HashMap + real senior tasks |
-| 12 | Scenarios | 100 production stories |
-| 13 | Mock interviews | Speak answers out loud, 45 minutes timed |
+| 11 | Problem Solving | UMPIRE framework, hash/two-pointer patterns, live string/array tasks |
+| 12 | Algorithms | Big-O, binary search, trees, graphs, DP — C# implementations |
+| 13 | C# DSA & .NET Tasks | Dictionary/Stack/Queue, LINQ group/top-N, CSV parse, validation, decimal |
+| 14 | Coding Tasks | Real-world senior machine-test scenarios |
+| 15 | Scenarios | 100 production stories |
+| 16 | Mock interviews | Speak answers out loud, 45 minutes timed |
 
 ### Daily loop (90 minutes)
 1. Read one section (20m)
