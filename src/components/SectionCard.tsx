@@ -62,7 +62,7 @@ export function SectionCard({
   return (
     <section
       id={id}
-      className="scroll-mt-24 bg-white p-5 sm:p-6 md:p-8 border border-slate-200 rounded-xl shadow-sm"
+      className="scroll-mt-20 sm:scroll-mt-24 bg-white p-4 sm:p-5 md:p-6 lg:p-8 border border-slate-200 rounded-xl shadow-sm w-full min-w-0"
     >
       <ChapterHeader
         title={title}

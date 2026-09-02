@@ -18,7 +18,7 @@ export function ChapterHeader({
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-3 mb-6">
-      <h3 className="text-handbook-h2 text-slate-900 flex items-center gap-3 leading-snug">
+      <h3 className="text-handbook-h2 text-slate-900 flex flex-wrap items-center gap-2 sm:gap-3 leading-snug min-w-0 break-words">
         <span className="w-3 h-3 bg-brand-cyan rounded-full border border-indigo-200 shrink-0" />
         {sectionNumber && (
           <span className="text-brand-cyan font-mono text-base shrink-0">{sectionNumber}</span>

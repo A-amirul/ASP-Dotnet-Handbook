@@ -42,10 +42,10 @@ export function Home() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={cn(CONTENT_MAX_WIDTH, 'mx-auto space-y-12')}
+      className={cn(CONTENT_MAX_WIDTH, 'mx-auto space-y-8 sm:space-y-10 md:space-y-12')}
     >
-      <section className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white p-8 md:p-14 shadow-xl border border-slate-700/50">
-        <div className="relative z-10 max-w-3xl">
+      <section className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white p-5 sm:p-8 md:p-12 lg:p-14 shadow-xl border border-slate-700/50 w-full">
+        <div className="relative z-10 w-full max-w-none">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">
               .NET Developer Handbook — Bilingual Edition
@@ -108,7 +108,7 @@ export function Home() {
             </span>
           </div>
         </div>
-        <Code2 className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 opacity-5 w-96 h-96" />
+        <Code2 className="hidden md:block absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/4 opacity-5 w-64 h-64 lg:w-96 lg:h-96 pointer-events-none" />
       </section>
 
       <section className="space-y-6">
@@ -120,12 +120,12 @@ export function Home() {
           Follow this order: C# → Web → Database → Architecture → DevOps → Problem Solving → Interview.
           Sidebar groups match these phases.
         </p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 w-full">
           {ROADMAP.map((item) => (
             <Link
               key={item.step}
               to={`/${item.id}`}
-              className="group bg-white p-6 border border-slate-200 rounded-xl hover:border-teal-600/40 transition-all hover:shadow-md"
+              className="group bg-white p-4 sm:p-5 md:p-6 border border-slate-200 rounded-xl hover:border-teal-600/40 transition-all hover:shadow-md w-full min-w-0"
             >
               <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">
                 {item.phase}
@@ -145,7 +145,7 @@ export function Home() {
         </div>
       </section>
 
-      <div className="p-8 bg-slate-100 border border-slate-200 rounded-2xl">
+      <div className="p-4 sm:p-6 md:p-8 bg-slate-100 border border-slate-200 rounded-xl sm:rounded-2xl w-full">
         <LocalizedSplit
           columns="stack"
           en={

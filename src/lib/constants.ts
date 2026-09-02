@@ -26,4 +26,5 @@ export const EXPLANATION_LABELS = {
   quickSummary: { en: 'Quick summary', bn: 'দ্রুত সারাংশ' },
 } as const;
 
-export const CONTENT_MAX_WIDTH = 'max-w-7xl xl:max-w-[1400px]';
+/** Full width of main column — avoids empty margins beside sidebar on wide screens */
+export const CONTENT_MAX_WIDTH = 'w-full max-w-full min-w-0';

@@ -344,7 +344,11 @@
   }
   
   body {
-    @apply bg-brand-bg text-brand-text font-sans antialiased overflow-x-hidden;
+    @apply bg-brand-bg text-brand-text font-sans antialiased overflow-x-hidden min-h-[100dvh];
+  }
+
+  #root {
+    @apply w-full min-h-[100dvh];
   }
 
   /* Custom scrollbar for desktop */
@@ -370,7 +374,7 @@
 }
 
 .markdown-body table {
-  @apply w-full border-collapse my-6 text-sm;
+  @apply w-full border-collapse my-4 sm:my-6 text-xs sm:text-sm;
 }
 
 .markdown-body th {
@@ -387,19 +391,19 @@
 
 /* Handbook typography scale */
 .text-handbook-h1 {
-  @apply text-3xl md:text-4xl font-bold tracking-tight;
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight break-words;
 }
 
 .text-handbook-h2 {
-  @apply text-2xl font-semibold tracking-tight text-slate-900;
+  @apply text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 break-words;
 }
 
 .text-handbook-h3 {
-  @apply text-xl font-semibold text-slate-900;
+  @apply text-lg sm:text-xl font-semibold text-slate-900 break-words;
 }
 
 .text-handbook-h4 {
-  @apply text-lg font-medium text-slate-800;
+  @apply text-base sm:text-lg font-medium text-slate-800 break-words;
 }
 
 .font-bengali {
@@ -423,7 +427,12 @@
 }
 
 .handbook-prose table {
-  @apply w-full border-collapse my-4 text-sm;
+  @apply w-full border-collapse my-4 text-xs sm:text-sm;
+}
+
+.handbook-prose th,
+.handbook-prose td {
+  @apply break-words;
 }
 
 .handbook-prose th {

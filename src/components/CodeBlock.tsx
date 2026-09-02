@@ -46,16 +46,16 @@ export function CodeBlock({
       >
         <div
           className={cn(
-            'flex justify-between items-center px-5 py-3 text-[11px] font-bold uppercase tracking-wider border-b',
+            'flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-3 px-4 sm:px-5 py-2.5 sm:py-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border-b',
             isSql
               ? 'text-slate-400 border-slate-700'
               : 'text-slate-500 border-slate-800'
           )}
         >
-          <span>{title}</span>
-          <span>{subtitle ?? (isSql ? 'SQL Server / PostgreSQL' : 'C# / .NET SDK')}</span>
+          <span className="truncate">{title}</span>
+          <span className="shrink-0 opacity-80">{subtitle ?? (isSql ? 'SQL Server / PostgreSQL' : 'C# / .NET SDK')}</span>
         </div>
-        <pre className="p-5 overflow-x-auto m-0 leading-relaxed">
+        <pre className="p-3 sm:p-5 overflow-x-auto m-0 leading-relaxed text-xs sm:text-sm">
           <code ref={ref} className={`language-${language}`}>
             {code}
           </code>

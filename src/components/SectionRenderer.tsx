@@ -14,7 +14,7 @@ import { cn } from '../lib/utils';
 import { CONTENT_MAX_WIDTH } from '../lib/constants';
 import { handbookData } from '../data';
 import type { HandbookModule } from '../data/types';
-import { normalizeBilingualItems } from '../lib/contentHelpers';
+import { normalizeBilingualItems, sectionSlug } from '../lib/contentHelpers';
 import { applyBilingualPatch } from '../data/bilingualPatches';
 import { SectionCard } from './SectionCard';
 import { TableOfContents } from './TableOfContents';
@@ -135,21 +135,21 @@ export function SectionRenderer({ data: initialData }: SectionRendererProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
-      className={cn(CONTENT_MAX_WIDTH, 'mx-auto space-y-8 pb-16')}
+      className={cn(CONTENT_MAX_WIDTH, 'w-full space-y-6 sm:space-y-8 pb-12 sm:pb-16')}
     >
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-slate-200 pb-6 gap-6">
-        <div className="space-y-2">
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-slate-200 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full">
+        <div className="space-y-2 min-w-0 flex-1">
           <div className="flex items-center gap-2 text-brand-cyan font-bold text-xs uppercase tracking-widest">
-            <LayoutDashboard size={14} />
+            <LayoutDashboard size={14} className="shrink-0" />
             Chapter {String(moduleChapter).padStart(2, '0')}
           </div>
-          <h1 className="text-handbook-h1 text-slate-900">{data.title}</h1>
-          <p className="text-slate-600 text-base leading-relaxed max-w-3xl">{data.description}</p>
+          <h1 className="text-handbook-h1 text-slate-900 break-words">{data.title}</h1>
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">{data.description}</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          <LanguageTabs size="md" className="w-full sm:w-auto shrink-0" />
-          <div className="flex gap-2 flex-1 min-w-0">
-            <div className="relative flex-1 lg:w-72 min-w-0">
+        <div className="flex flex-col gap-3 w-full lg:w-auto lg:max-w-md xl:max-w-lg shrink-0">
+          <LanguageTabs size="md" className="w-full sm:w-auto" />
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               type="search"
@@ -163,7 +163,7 @@ export function SectionRenderer({ data: initialData }: SectionRendererProps) {
             type="button"
             onClick={downloadAsPDF}
             disabled={isDownloading}
-            className="h-11 px-4 bg-slate-900 text-white rounded-lg flex items-center gap-2 text-xs font-bold uppercase disabled:opacity-50 shrink-0"
+            className="h-11 px-4 bg-slate-900 text-white rounded-lg flex items-center justify-center gap-2 text-xs font-bold uppercase disabled:opacity-50 shrink-0 w-full sm:w-auto"
           >
             {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
             PDF
@@ -172,10 +172,39 @@ export function SectionRenderer({ data: initialData }: SectionRendererProps) {
         </div>
       </header>
 
-      <div className="flex gap-8 items-start">
+      {sections.length > 0 && (
+        <details className="xl:hidden w-full bg-white border border-slate-200 rounded-lg group">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-slate-700 list-none flex items-center justify-between">
+            <span>On this page | এই অধ্যায়</span>
+            <span className="text-slate-400 text-xs group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <nav className="px-2 pb-3 border-t border-slate-100 max-h-48 overflow-y-auto custom-scrollbar">
+            <ul className="space-y-0.5 pt-2">
+              {sections.map((section, idx) => {
+                const slug = sectionSlug(section, idx);
+                const title = section.topic ?? section.title ?? `Section ${idx + 1}`;
+                const num = section.sectionNumber ?? `${moduleChapter}.${idx + 1}`;
+                return (
+                  <li key={slug}>
+                    <a
+                      href={`#${slug}`}
+                      className="block px-3 py-2 text-sm text-slate-600 hover:text-brand-cyan hover:bg-slate-50 rounded-lg truncate"
+                    >
+                      <span className="font-mono text-[10px] text-slate-400 mr-2">{num}</span>
+                      {title}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </details>
+      )}
+
+      <div className="flex flex-col xl:flex-row gap-4 xl:gap-6 items-start w-full">
         <TableOfContents sections={sections} moduleChapter={moduleChapter} />
 
-        <div id="pdf-content" className="flex-1 min-w-0 space-y-8">
+        <div id="pdf-content" className="flex-1 min-w-0 w-full space-y-6 sm:space-y-8">
           {sections.map((section, idx) => (
             <SectionCard
               key={section.id ?? idx}
@@ -213,13 +242,43 @@ export function SectionRenderer({ data: initialData }: SectionRendererProps) {
           })}
 
           {data.quickRevision && (
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
               {(data.quickRevision.concepts ?? []).length > 0 && (
-                <div className="bg-white border rounded-xl p-5">
+                <div className="bg-white border rounded-xl p-4 sm:p-5">
                   <h4 className="text-xs font-black uppercase text-brand-cyan mb-3">Key concepts</h4>
-                  <ul className="space-y-2 text-base">
+                  <ul className="space-y-2 text-sm sm:text-base">
                     {data.quickRevision.concepts.map((c, i) => (
-                      <li key={i}>• {c}</li>
+                      <li key={i} className="break-words">• {c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {(data.quickRevision.questions ?? []).length > 0 && (
+                <div className="bg-white border rounded-xl p-4 sm:p-5">
+                  <h4 className="text-xs font-black uppercase text-sky-600 mb-3">Quick questions</h4>
+                  <ul className="space-y-2 text-sm sm:text-base">
+                    {data.quickRevision.questions.map((c, i) => (
+                      <li key={i} className="break-words">• {c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {(data.quickRevision.mistakes ?? []).length > 0 && (
+                <div className="bg-white border rounded-xl p-4 sm:p-5">
+                  <h4 className="text-xs font-black uppercase text-rose-600 mb-3">Common mistakes</h4>
+                  <ul className="space-y-2 text-sm sm:text-base">
+                    {data.quickRevision.mistakes.map((c, i) => (
+                      <li key={i} className="break-words">• {c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {(data.quickRevision.scenarios ?? []).length > 0 && (
+                <div className="bg-white border rounded-xl p-4 sm:p-5 sm:col-span-2">
+                  <h4 className="text-xs font-black uppercase text-amber-700 mb-3">Practice scenarios</h4>
+                  <ul className="space-y-2 text-sm sm:text-base">
+                    {data.quickRevision.scenarios.map((c, i) => (
+                      <li key={i} className="break-words">• {c}</li>
                     ))}
                   </ul>
                 </div>
