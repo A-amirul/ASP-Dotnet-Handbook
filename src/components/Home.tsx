@@ -17,22 +17,22 @@ import { LocalizedSplit } from './LocalizedSplit';
 import { useLanguage } from '../context/LanguageContext';
 
 const ROADMAP = [
-  { step: 1, id: 'guide', title: 'How to Use', desc: 'Mindset, study order, bilingual learning path.' },
-  { step: 2, id: 'basics', title: 'C# Fundamentals', desc: 'Arrays, loops, first programs.' },
-  { step: 3, id: 'csharp', title: 'C# & OOP', desc: 'Types, memory, SOLID, interfaces.' },
-  { step: 4, id: 'linq', title: 'LINQ', desc: 'Deferred execution, IQueryable.' },
-  { step: 5, id: 'async', title: 'Async & Threads', desc: 'Task, await, concurrency.' },
-  { step: 6, id: 'aspnet', title: 'ASP.NET Core', desc: 'Pipeline, middleware, DI.' },
-  { step: 7, id: 'database', title: 'EF Core & SQL', desc: 'DbContext, tracking, queries.' },
-  { step: 8, id: 'architecture', title: 'Architecture', desc: 'Clean Architecture, CQRS.' },
-  { step: 9, id: 'security', title: 'Security', desc: 'Auth, JWT, OWASP.' },
-  { step: 10, id: 'distributed', title: 'Distributed', desc: 'Microservices, messaging.' },
-  { step: 11, id: 'problemsolving', title: 'Problem Solving', desc: 'Interview framework, patterns, live tasks.' },
-  { step: 12, id: 'algorithms', title: 'Algorithms', desc: 'Big-O, trees, graphs, DP in C#.' },
-  { step: 13, id: 'csharpproblems', title: 'C# DSA & .NET Tasks', desc: 'Collections, LINQ, parsing, machine tests.' },
-  { step: 14, id: 'bdinterview', title: 'BD Interview Guide', desc: 'Scenarios, Q&A, mock rounds for BD companies.' },
-  { step: 15, id: 'scenarios', title: 'Scenarios', desc: 'Production incidents.' },
-  { step: 16, id: 'revision', title: 'Revision', desc: 'Last-day checklist.' },
+  { step: 1, phase: 'Start', id: 'guide', title: 'How to Use', desc: 'Study order — no duplicate topics.' },
+  { step: 2, phase: 'C#', id: 'basics', title: 'C# Fundamentals', desc: 'Loops, arrays, first programs.' },
+  { step: 3, phase: 'C#', id: 'csharp', title: 'C# & OOP', desc: 'Types, SOLID, polymorphism, GC.' },
+  { step: 4, phase: 'C#', id: 'linq', title: 'LINQ', desc: 'IQueryable, deferred execution.' },
+  { step: 5, phase: 'C#', id: 'async', title: 'Async & Threads', desc: 'Task, await, concurrency.' },
+  { step: 6, phase: 'Web', id: 'aspnet', title: 'ASP.NET Core', desc: 'Middleware, pipeline, DI.' },
+  { step: 7, phase: 'Database', id: 'database', title: 'EF Core', desc: 'DbContext, tracking, N+1.' },
+  { step: 8, phase: 'Database', id: 'sql', title: 'SQL Server', desc: 'Index, CTE, optimization.' },
+  { step: 9, phase: 'Architecture', id: 'architecture', title: 'Architecture', desc: 'Clean Architecture, CQRS.' },
+  { step: 10, phase: 'DevOps', id: 'devops', title: 'DevOps & Docker', desc: 'CI/CD, containers, deploy.' },
+  { step: 11, phase: 'Coding', id: 'problemsolving', title: 'Problem Solving', desc: 'UMPIRE framework, patterns.' },
+  { step: 12, phase: 'Coding', id: 'algorithms', title: 'Algorithms', desc: 'Big-O, trees, graphs, DP.' },
+  { step: 13, phase: 'Coding', id: 'csharpproblems', title: 'C# DSA & LINQ Tasks', desc: 'Collections, ERP live coding.' },
+  { step: 14, phase: 'Interview', id: 'bdinterview', title: 'BD Scenarios & Mock', desc: 'ERP scenarios — theory in core modules.' },
+  { step: 15, phase: 'Interview', id: 'mdhandbook', title: 'Uploaded MD Topics', desc: 'Doc.md + Doc2.md — full Q&A index.' },
+  { step: 16, phase: 'Interview', id: 'revision', title: 'Revision', desc: 'Last-day checklist.' },
 ];
 
 export function Home() {
@@ -61,17 +61,16 @@ export function Home() {
             en={
               showEn ? (
                 <p lang="en" className="text-lg text-slate-300 leading-relaxed">
-                  A professional handbook for beginners and interview prep. Every important concept
-                  includes clear English explanation, simple Bangla explanation, real-world analogy,
-                  diagrams, and code.
+                  A professional handbook for beginners and interview prep. Topics are grouped by area
+                  (C#, Database, Coding, DevOps) in learning order — no duplicate content.
                 </p>
               ) : undefined
             }
             bn={
               showBn ? (
                 <p lang="bn" className="text-lg text-slate-300 font-bengali leading-relaxed">
-                  প্রতিটি গুরুত্বপূর্ণ টপিকে ইংরেজি ও বাংলায় সহজ ব্যাখ্যা, বাস্তব উদাহরণ, ডায়াগ্রাম ও
-                  কোড — যাতে শুরু থেকেই .NET শেখা সহজ হয়।
+                  C#, Database, Coding, DevOps — serial order-এ গুছানো। একই topic দুই জায়গায় নেই —
+                  sidebar অনুযায়ী একটার পর একটা পড়ুন।
                 </p>
               ) : undefined
             }
@@ -118,8 +117,8 @@ export function Home() {
           <span className="text-xs font-bold text-brand-cyan uppercase">2026 Edition</span>
         </div>
         <p className="text-base text-slate-600">
-          Study in order. Each module builds on the previous one. Read both English and Bangla sections —
-          they explain the same idea in different ways for better understanding.
+          Follow this order: C# → Web → Database → Architecture → DevOps → Problem Solving → Interview.
+          Sidebar groups match these phases.
         </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {ROADMAP.map((item) => (
@@ -128,7 +127,10 @@ export function Home() {
               to={`/${item.id}`}
               className="group bg-white p-6 border border-slate-200 rounded-xl hover:border-teal-600/40 transition-all hover:shadow-md"
             >
-              <span className="text-4xl font-black text-slate-100 group-hover:text-teal-100">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">
+                {item.phase}
+              </span>
+              <span className="block text-4xl font-black text-slate-100 group-hover:text-teal-100">
                 {String(item.step).padStart(2, '0')}
               </span>
               <h3 className="text-sm font-bold text-slate-900 mt-2 group-hover:text-teal-700">
@@ -150,15 +152,15 @@ export function Home() {
             showEn ? (
               <p lang="en" className="text-base text-slate-700">
                 Every concept covers what it is, why it matters, how it works, when to use it, and a
-                real-world example.
+                real-world example — once per topic, in the right module.
               </p>
             ) : undefined
           }
           bn={
             showBn ? (
               <p lang="bn" className="text-lg text-slate-800 font-bengali leading-relaxed italic">
-                "প্রতিটি কনসেপ্ট শুধু সংজ্ঞা নয় — কী, কেন, কীভাবে, কখন ব্যবহার করবেন, এবং বাস্তব জীবনে
-                কোথায় কাজে লাগে — এগুলোই এই হ্যান্ডবুক শেখায়।"
+                "প্রতিটি topic এক জায়গায়, serial order-এ — C# একসাথে, Database একসাথে, Coding একসাথে।
+                duplicate পড়বেন না; sidebar follow করুন।"
               </p>
             ) : undefined
           }
