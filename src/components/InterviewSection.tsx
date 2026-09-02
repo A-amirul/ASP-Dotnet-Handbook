@@ -227,12 +227,19 @@ export function InterviewSection({ interviewQs, practice }: InterviewSectionProp
       return hasLocalizedContent(n.q, showEn, showBn, true) || hasLocalizedContent(n.a, showEn, showBn, false);
     }) ?? [];
 
+  const twoColumnLayout = visibleQuestions.length > 0 && showPractice;
+
   if (!visibleQuestions.length && !showPractice) return null;
 
   return (
-    <div className="grid lg:grid-cols-2 gap-6 pt-8 border-t border-slate-100">
+    <div
+      className={cn(
+        'pt-6 sm:pt-8 border-t border-slate-100 w-full',
+        twoColumnLayout ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6' : 'flex flex-col gap-4 sm:gap-6'
+      )}
+    >
       {visibleQuestions.length > 0 && (
-        <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 lg:col-span-1">
+        <div className="bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 w-full min-w-0">
           <h4 className="text-[11px] font-bold text-brand-cyan uppercase tracking-widest mb-4 flex items-center gap-2">
             <Star size={14} className="fill-brand-cyan text-brand-cyan" />
             <LocalizedLabel en="Interview focus" bn="ইন্টারভিউ ফোকাস" />
@@ -272,7 +279,7 @@ export function InterviewSection({ interviewQs, practice }: InterviewSectionProp
       )}
 
       {showPractice && practiceText && (
-        <div className="bg-slate-900 text-white p-6 rounded-xl relative overflow-hidden">
+        <div className="bg-slate-900 text-white p-4 sm:p-6 rounded-xl relative overflow-hidden w-full min-w-0">
           <div className="relative z-10 space-y-3">
             <div className="text-[11px] uppercase text-brand-cyan font-bold tracking-widest flex items-center gap-2">
               <ListChecks size={14} />

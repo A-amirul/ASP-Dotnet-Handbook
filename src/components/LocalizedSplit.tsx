@@ -42,10 +42,10 @@ export function LocalizedSplit({
     columns === 'stack'
       ? 'flex flex-col gap-4'
       : columns === 'side'
-        ? 'grid lg:grid-cols-2 gap-4'
+        ? 'grid grid-cols-1 md:grid-cols-2 gap-4 w-full'
         : mode === 'both'
-          ? 'grid lg:grid-cols-2 gap-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-200'
-          : 'flex flex-col gap-4';
+          ? 'grid grid-cols-1 md:grid-cols-2 gap-4 divide-y md:divide-y-0 md:divide-x divide-slate-200 w-full'
+          : 'flex flex-col gap-4 w-full';
 
   return (
     <div className={cn(gridClass, className)}>
@@ -59,7 +59,7 @@ export function LocalizedSplit({
           className={cn(
             bnClassName,
             'font-bengali',
-            mode === 'both' && 'lg:pl-4 lg:bg-indigo-50/20 lg:rounded-lg lg:p-4'
+            mode === 'both' && 'md:pl-4 md:bg-indigo-50/20 md:rounded-lg md:p-4'
           )}
           lang="bn"
         >

@@ -68,7 +68,7 @@ export function CodingTaskCard({ taskIndex, title, patched, code }: CodingTaskCa
     patched.solution?.en;
 
   return (
-    <section className="bg-white p-6 md:p-8 border border-slate-200 rounded-xl space-y-6">
+    <section className="bg-white p-4 sm:p-6 md:p-8 border border-slate-200 rounded-xl space-y-4 sm:space-y-6 w-full min-w-0">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h3 className="text-handbook-h2 text-slate-900">{title}</h3>
         <span className="text-xs font-mono text-slate-400 shrink-0">

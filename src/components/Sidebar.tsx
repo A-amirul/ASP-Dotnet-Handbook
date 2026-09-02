@@ -65,7 +65,7 @@ export function Sidebar({ isOpen, collapsed, onClose, onToggleCollapse }: Sideba
         className={cn(
           'fixed lg:static inset-y-0 left-0 z-50 bg-brand-sidebar flex flex-col border-r border-slate-200 transform transition-all duration-300 lg:translate-x-0 h-full shadow-xl lg:shadow-sm',
           isOpen ? 'translate-x-0' : '-translate-x-full',
-          collapsed ? 'w-16' : 'w-64'
+          collapsed ? 'w-16' : 'w-[min(100vw-2rem,16rem)] sm:w-64'
         )}
       >
         <div className="flex flex-col h-full">

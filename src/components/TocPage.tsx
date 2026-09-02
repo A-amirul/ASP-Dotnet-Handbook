@@ -19,7 +19,7 @@ export function TocPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`${CONTENT_MAX_WIDTH} mx-auto space-y-10 pb-16`}
+      className={`${CONTENT_MAX_WIDTH} w-full space-y-8 sm:space-y-10 pb-12 sm:pb-16`}
     >
       <header className="border-b border-slate-200 pb-6">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
