@@ -80,9 +80,10 @@ export const guideData = {
 | 11 | Problem Solving | UMPIRE framework, hash/two-pointer patterns, live string/array tasks |
 | 12 | Algorithms | Big-O, binary search, trees, graphs, DP — C# implementations |
 | 13 | C# DSA & .NET Tasks | Dictionary/Stack/Queue, LINQ group/top-N, CSV parse, validation, decimal |
-| 14 | Coding Tasks | Real-world senior machine-test scenarios |
-| 15 | Scenarios | 100 production stories |
-| 16 | Mock interviews | Speak answers out loud, 45 minutes timed |
+| 14 | BD Interview Guide | 40 scenarios, 80+ Q&A, mock rounds, live coding (Brain Station, TigerIT, ERP) |
+| 15 | Coding Tasks | Real-world senior machine-test scenarios |
+| 16 | Scenarios | 100 production stories |
+| 17 | Mock interviews | Speak answers out loud, 45 minutes timed |
 
 ### Daily loop (90 minutes)
 1. Read one section (20m)

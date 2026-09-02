@@ -809,6 +809,54 @@ const SECTION_PATCHES = {
       },
     },
   },
+  'bd-scenarios-production': {
+    explanation: {
+      what: {
+        en: '**Production scenarios 1–20** from BD .NET interviews: slow API, deadlock, payroll, Redis/MQ failure, SARGable SQL, memory leak.',
+        bn: '**Production scenario 1–20** — slow API, deadlock, payroll, Redis/MQ, SARGable SQL, memory leak।',
+      },
+      why: {
+        en: 'BD companies test systematic investigation — not memorized "add Redis."',
+        bn: 'BD company investigation test — Redis মুখস্থ নয়।',
+      },
+      how: {
+        en: '**Understand → Measure → Fix → Verify → Prevent.** Never guess the bottleneck.',
+        bn: '**Understand → Measure → Fix → Verify → Prevent.**',
+      },
+      analogy: {
+        en: 'Doctor: symptoms → tests → diagnosis → treatment.',
+        bn: 'ডাক্তার: symptom → test → diagnosis → treatment।',
+      },
+      realWorld: {
+        en: 'ERP/HRM: employee list, payroll, attendance — daily BD project patterns.',
+        bn: 'ERP: employee, payroll, attendance — BD project pattern।',
+      },
+    },
+  },
+  'bd-bonus-erp-traps': {
+    explanation: {
+      what: {
+        en: '**10 ERP trap questions:** Any vs Count, First vs Single, IQueryable, Task.WhenAll, transactions, concurrency.',
+        bn: '**১০ ERP trap** — Any/Count, First/Single, IQueryable, Task.WhenAll, transaction, concurrency।',
+      },
+      why: {
+        en: 'Filters tutorial watchers from developers who wrote production EF/SQL.',
+        bn: 'Tutorial vs production EF/SQL developer filter।',
+      },
+      how: {
+        en: 'Each trap: wrong pattern, correct pattern, one-line why.',
+        bn: 'Wrong, correct, one-line why।',
+      },
+      analogy: {
+        en: 'Driving test trick questions — small detail, big consequence.',
+        bn: 'Driving test trick question।',
+      },
+      realWorld: {
+        en: 'ERP code review catches Count()>0 and ToList().Where() often.',
+        bn: 'ERP review-এ Count()>0, ToList().Where() catch।',
+      },
+    },
+  },
 };
 
 function escapeTemplate(s) {
@@ -897,6 +945,7 @@ const allTasks = [
   ...extractTasksFromFile(path.join(root, 'problemSolving.ts')),
   ...extractTasksFromFile(path.join(root, 'algorithms.ts')),
   ...extractTasksFromFile(path.join(root, 'csharpProblems.ts')),
+  ...extractTasksFromFile(path.join(root, 'bdDotnetInterview.ts')),
 ];
 
 const entries = [];

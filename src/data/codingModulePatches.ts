@@ -453,6 +453,54 @@ Stairs: \`dp[i]=dp[i-1]+dp[i-2]\``,
       },
     },
   },
+  'bd-scenarios-production': {
+    explanation: {
+      what: {
+        en: `**Production scenarios 1–20** from BD .NET interviews: slow API, deadlock, payroll, Redis/MQ failure, SARGable SQL, memory leak.`,
+        bn: `**Production scenario 1–20** — slow API, deadlock, payroll, Redis/MQ, SARGable SQL, memory leak।`,
+      },
+      why: {
+        en: `BD companies test systematic investigation — not memorized "add Redis."`,
+        bn: `BD company investigation test — Redis মুখস্থ নয়।`,
+      },
+      how: {
+        en: `**Understand → Measure → Fix → Verify → Prevent.** Never guess the bottleneck.`,
+        bn: `**Understand → Measure → Fix → Verify → Prevent.**`,
+      },
+      analogy: {
+        en: `Doctor: symptoms → tests → diagnosis → treatment.`,
+        bn: `ডাক্তার: symptom → test → diagnosis → treatment।`,
+      },
+      realWorld: {
+        en: `ERP/HRM: employee list, payroll, attendance — daily BD project patterns.`,
+        bn: `ERP: employee, payroll, attendance — BD project pattern।`,
+      },
+    },
+  },
+  'bd-bonus-erp-traps': {
+    explanation: {
+      what: {
+        en: `**10 ERP trap questions:** Any vs Count, First vs Single, IQueryable, Task.WhenAll, transactions, concurrency.`,
+        bn: `**১০ ERP trap** — Any/Count, First/Single, IQueryable, Task.WhenAll, transaction, concurrency।`,
+      },
+      why: {
+        en: `Filters tutorial watchers from developers who wrote production EF/SQL.`,
+        bn: `Tutorial vs production EF/SQL developer filter।`,
+      },
+      how: {
+        en: `Each trap: wrong pattern, correct pattern, one-line why.`,
+        bn: `Wrong, correct, one-line why।`,
+      },
+      analogy: {
+        en: `Driving test trick questions — small detail, big consequence.`,
+        bn: `Driving test trick question।`,
+      },
+      realWorld: {
+        en: `ERP code review catches Count()>0 and ToList().Where() often.`,
+        bn: `ERP review-এ Count()>0, ToList().Where() catch।`,
+      },
+    },
+  },
   '1-fizzbuzz-classic-warm-up': {
     problem: {
       en: `Print numbers from **1 to n**. Replace multiples of 3 with \`"Fizz"\`, multiples of 5 with \`"Buzz"\`, and multiples of both with \`"FizzBuzz"\`.`,
@@ -7838,6 +7886,966 @@ Pattern: **Hash map (Dictionary/HashSet)**`,
       realWorld: {
         en: `In .NET jobs, ConcurrentDictionary — Thread-Safe Word Count-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
         bn: `.NET job-এ ConcurrentDictionary — Thread-Safe Word Count-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '1-find-duplicate-emails-linq-groupby': {
+    problem: {
+      en: `**Problem:** From employee list, return emails that appear more than once.`,
+      bn: `**প্রশ্ন:** Employee list থেকে duplicate email বের করুন — GroupBy ব্যবহার করুন।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Hash map (Dictionary/HashSet)**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Hash map (Dictionary/HashSet)**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Hash map (Dictionary/HashSet)**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Hash map (Dictionary/HashSet)**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Find Duplicate Emails:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Find Duplicate Emails solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Find Duplicate Emails** — a common .NET interview coding task using the **Hash map (Dictionary/HashSet)** pattern.`,
+        bn: `**Find Duplicate Emails** — .NET interview-এ common task, **Hash map (Dictionary/HashSet)** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Hash map (Dictionary/HashSet)).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Hash map (Dictionary/HashSet)) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Find Duplicate Emails like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Find Duplicate Emails = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Find Duplicate Emails-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Find Duplicate Emails-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '2-second-highest-salary-distinct-skip': {
+    problem: {
+      en: `**Problem:** Return second highest salary handling duplicate salary values.`,
+      bn: `**প্রশ্ন:** Duplicate salary handle করে second highest salary return করুন।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **LINQ & collections**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **LINQ & collections**`,
+    },
+    approach: {
+      en: `**Approach:** Use **LINQ & collections**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **LINQ & collections**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Second Highest Salary:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Second Highest Salary solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Second Highest Salary** — a common .NET interview coding task using the **LINQ & collections** pattern.`,
+        bn: `**Second Highest Salary** — .NET interview-এ common task, **LINQ & collections** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (LINQ & collections).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (LINQ & collections) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Second Highest Salary like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Second Highest Salary = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Second Highest Salary-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Second Highest Salary-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '3-missing-numbers-in-sequence-1-n': {
+    problem: {
+      en: `**Problem:** Given array with gaps, return missing numbers from 1 to n.`,
+      bn: `**প্রশ্ন:** ১ থেকে n পর্যন্ত missing number return করুন — Except/Range।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Bit manipulation (XOR)**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Bit manipulation (XOR)**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Bit manipulation (XOR)**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Bit manipulation (XOR)**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Missing Numbers in Sequence 1..n:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Missing Numbers in Sequence 1..n solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Missing Numbers in Sequence 1..n** — a common .NET interview coding task using the **Bit manipulation (XOR)** pattern.`,
+        bn: `**Missing Numbers in Sequence 1..n** — .NET interview-এ common task, **Bit manipulation (XOR)** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Bit manipulation (XOR)).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Bit manipulation (XOR)) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Missing Numbers in Sequence 1..n like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Missing Numbers in Sequence 1..n = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Missing Numbers in Sequence 1..n-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Missing Numbers in Sequence 1..n-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '4-reverse-string-two-pointers': {
+    problem: {
+      en: `**Problem:** Reverse a string in-place using two pointers — no built-in Reverse.`,
+      bn: `**প্রশ্ন:** Two pointer দিয়ে string reverse — built-in Reverse ছাড়া।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Two pointers**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Two pointers**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Two pointers**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Two pointers**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Reverse String:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Reverse String solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Reverse String** — a common .NET interview coding task using the **Two pointers** pattern.`,
+        bn: `**Reverse String** — .NET interview-এ common task, **Two pointers** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Two pointers).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Two pointers) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Reverse String like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Reverse String = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Reverse String-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Reverse String-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '5-employee-exists-any-vs-count': {
+    problem: {
+      en: `**Problem:** Check if employee with Id=10 exists — use Any(), not Count.`,
+      bn: `**প্রশ্ন:** Id=10 employee আছে কিনা — Any() ব্যবহার করুন, Count() নয়।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Problem solving**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Problem solving**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Problem solving**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Problem solving**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Employee Exists — Any vs Count:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Employee Exists — Any vs Count solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Employee Exists — Any vs Count** — a common .NET interview coding task using the **Problem solving** pattern.`,
+        bn: `**Employee Exists — Any vs Count** — .NET interview-এ common task, **Problem solving** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Problem solving).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Problem solving) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Employee Exists — Any vs Count like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Employee Exists — Any vs Count = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Employee Exists — Any vs Count-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Employee Exists — Any vs Count-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '6-top-3-highest-salary': {
+    problem: {
+      en: `**Problem:** Return top 3 employees by salary.`,
+      bn: `**প্রশ্ন:** Salary অনুযায়ী top 3 employee return করুন।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Problem solving**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Problem solving**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Problem solving**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Problem solving**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Top 3 Highest Salary:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Top 3 Highest Salary solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Top 3 Highest Salary** — a common .NET interview coding task using the **Problem solving** pattern.`,
+        bn: `**Top 3 Highest Salary** — .NET interview-এ common task, **Problem solving** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Problem solving).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Problem solving) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Top 3 Highest Salary like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Top 3 Highest Salary = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Top 3 Highest Salary-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Top 3 Highest Salary-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '7-department-wise-average-salary': {
+    problem: {
+      en: `**Problem:** Group employees by department and return average salary per department.`,
+      bn: `**প্রশ্ন:** Department অনুযায়ী group করে average salary return করুন।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Problem solving**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Problem solving**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Problem solving**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Problem solving**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Department Wise Average Salary:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Department Wise Average Salary solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Department Wise Average Salary** — a common .NET interview coding task using the **Problem solving** pattern.`,
+        bn: `**Department Wise Average Salary** — .NET interview-এ common task, **Problem solving** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Problem solving).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Problem solving) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Department Wise Average Salary like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Department Wise Average Salary = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Department Wise Average Salary-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Department Wise Average Salary-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '8-dynamic-linq-search-optional-filters': {
+    problem: {
+      en: `**Problem:** Build IQueryable with optional name, department, designation filters.`,
+      bn: `**প্রশ্ন:** Optional name/department/designation filter সহ IQueryable build করুন।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Binary search**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Binary search**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Binary search**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Binary search**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Dynamic LINQ Search:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Dynamic LINQ Search solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Dynamic LINQ Search** — a common .NET interview coding task using the **Binary search** pattern.`,
+        bn: `**Dynamic LINQ Search** — .NET interview-এ common task, **Binary search** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Binary search).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Binary search) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Dynamic LINQ Search like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Dynamic LINQ Search = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Dynamic LINQ Search-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Dynamic LINQ Search-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '9-pagination-search-sorting-api': {
+    problem: {
+      en: `**Problem:** Combine search, sort switch, Skip/Take pagination with AsNoTracking.`,
+      bn: `**প্রশ্ন:** Search, sort, pagination এক API-তে — AsNoTracking সহ।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Binary search**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Binary search**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Binary search**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Binary search**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for Pagination + Search + Sorting API:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**Pagination + Search + Sorting API solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n log n)
+**Space:** O(n)`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**Pagination + Search + Sorting API** — a common .NET interview coding task using the **Binary search** pattern.`,
+        bn: `**Pagination + Search + Sorting API** — .NET interview-এ common task, **Binary search** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Binary search).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Binary search) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of Pagination + Search + Sorting API like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `Pagination + Search + Sorting API = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, Pagination + Search + Sorting API-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ Pagination + Search + Sorting API-type logic service layer, LINQ, machine test-এ আসে।`,
+      },
+    },
+    commonMistakes: [
+      { en: `Starting to code without an example walkthrough.`, bn: `Example walkthrough ছাড়া code শুরু।` },
+      { en: `Not mentioning time/space complexity.`, bn: `Time/space complexity না বলা।` },
+    ],
+    bestPractices: [
+      { en: `Use meaningful names: \`left\`, \`right\`, \`seen\`, not \`i\`, \`j\`, \`d\`.`, bn: `Meaningful name: \`left\`, \`seen\` — \`i\`, \`d\` নয়।` },
+      { en: `Handle null/empty input first.`, bn: `Null/empty input আগে handle।` },
+    ],
+  },
+  '10-sql-second-highest-salary': {
+    problem: {
+      en: `**Problem:** T-SQL: find second highest salary without TOP 2.`,
+      bn: `**প্রশ্ন:** T-SQL: second highest salary — subquery MAX pattern।`,
+    },
+    example: {
+      en: `**How to explain in interview:**
+1. Write one small **input** on the board.
+2. Draw the **expected output**.
+3. Mention one **edge case** (empty, single item, duplicate).
+
+Pattern: **Problem solving**`,
+      bn: `**Interview-তে:**
+1. ছোট **input** লিখুন
+2. **Output** draw করুন
+3. এক **edge case** বলুন
+
+Pattern: **Problem solving**`,
+    },
+    approach: {
+      en: `**Approach:** Use **Problem solving**.
+- Name the C# type (Dictionary, Stack, Queue, etc.)
+- Say brute force first, then optimized idea
+- Write 3–5 bullet steps before coding`,
+      bn: `**Approach:** **Problem solving**।
+- C# type বলুন (Dictionary, Stack…)
+- আগে brute force, তারপর optimize
+- Code-এর আগে ৩–৫ bullet step`,
+    },
+    solution: {
+      en: `**Solution outline for SQL — Second Highest Salary:**
+1. Handle null/empty input.
+2. Initialize data structures.
+3. Main loop or recursion (core logic).
+4. Return the answer.
+5. Walk through your example on the board.
+
+↓ Full **C# code** is below — match each block to these steps.`,
+      bn: `**SQL — Second Highest Salary solution outline:**
+1. null/empty handle
+2. Structure init
+3. Main loop/recursion
+4. Return
+5. Example trace
+
+↓ **C# code** নিচে — step-এর সাথে match করুন।`,
+    },
+    complexity: {
+      en: `**Time:** O(n) typical for one pass
+**Space:** O(1) to O(n) — state in answer aloud`,
+      bn: `**Time:** O(n) (typical)
+**Space:** O(1)–O(n) — interview-তে বলুন`,
+    },
+    explanation: {
+      what: {
+        en: `**SQL — Second Highest Salary** — a common .NET interview coding task using the **Problem solving** pattern.`,
+        bn: `**SQL — Second Highest Salary** — .NET interview-এ common task, **Problem solving** pattern।`,
+      },
+      why: {
+        en: `Interviewers ask this to see if you can (1) restate the problem, (2) pick the right C# collection/algorithm, (3) handle edge cases, and (4) explain time/space complexity.`,
+        bn: `Interview-তে দেখে: problem বোঝা, সঠিক C# tool, edge case, complexity explain।`,
+      },
+      how: {
+        en: `**Step-by-step for beginners:**
+1) **Understand** — write one example input/output.
+2) **Brute force** — describe naive approach and its complexity.
+3) **Optimize** — name the pattern (Problem solving).
+4) **Code** — small methods, meaningful names.
+5) **Test** — empty input, single element, duplicates.
+6) **Complexity** — state Big-O aloud.`,
+        bn: `**Beginner steps:**
+1) Example input/output লিখুন।
+2) Brute force + complexity।
+3) Pattern (Problem solving) বলুন।
+4) Clean C# code।
+5) Edge case test।
+6) Big-O বলুন।`,
+      },
+      analogy: {
+        en: `Think of SQL — Second Highest Salary like following a **recipe card** — each step has a reason; skipping a step gives wrong output.`,
+        bn: `SQL — Second Highest Salary = **recipe card** — step skip করলে result ভুল।`,
+      },
+      realWorld: {
+        en: `In .NET jobs, SQL — Second Highest Salary-style logic appears in service-layer rules, LINQ transformations, and machine tests — not just puzzles.`,
+        bn: `.NET job-এ SQL — Second Highest Salary-type logic service layer, LINQ, machine test-এ আসে।`,
       },
     },
     commonMistakes: [

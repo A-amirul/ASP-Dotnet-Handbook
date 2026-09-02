@@ -32,6 +32,7 @@ import { dotnet10Data } from './dotnet10';
 import { problemSolvingData } from './problemSolving';
 import { algorithmsData } from './algorithms';
 import { csharpProblemsData } from './csharpProblems';
+import { bdDotnetInterviewData } from './bdDotnetInterview';
 
 export const handbookData = [
   guideData,
@@ -64,6 +65,7 @@ export const handbookData = [
   problemSolvingData,
   algorithmsData,
   csharpProblemsData,
+  bdDotnetInterviewData,
   scenariosData,
   leadershipData,
   questionBankData,
@@ -103,6 +105,7 @@ export {
   problemSolvingData,
   algorithmsData,
   csharpProblemsData,
+  bdDotnetInterviewData,
   scenariosData,
   leadershipData,
   questionBankData,
