@@ -133,5 +133,5 @@ export const NAV_GROUPS: NavGroup[] = [
   { title: 'Data', ids: ['database', 'sql'] },
   { title: 'Architecture', ids: ['architecture', 'patterns'] },
   { title: 'Production', ids: ['security', 'caching', 'messaging', 'jobs', 'distributed', 'testing', 'observability', 'logging', 'performance', 'devops'] },
-  { title: 'Interview Prep', ids: ['systemdesign', 'frontend', 'problemsolving', 'algorithms', 'csharpproblems', 'tasks', 'scenarios', 'leadership', 'questionbank', 'traps', 'revision'] },
+  { title: 'Interview Prep', ids: ['systemdesign', 'frontend', 'problemsolving', 'algorithms', 'csharpproblems', 'bdinterview', 'tasks', 'scenarios', 'leadership', 'questionbank', 'traps', 'revision'] },
 ];

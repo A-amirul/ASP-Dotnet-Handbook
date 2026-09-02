@@ -30,8 +30,9 @@ const ROADMAP = [
   { step: 11, id: 'problemsolving', title: 'Problem Solving', desc: 'Interview framework, patterns, live tasks.' },
   { step: 12, id: 'algorithms', title: 'Algorithms', desc: 'Big-O, trees, graphs, DP in C#.' },
   { step: 13, id: 'csharpproblems', title: 'C# DSA & .NET Tasks', desc: 'Collections, LINQ, parsing, machine tests.' },
-  { step: 14, id: 'scenarios', title: 'Scenarios', desc: 'Production incidents.' },
-  { step: 15, id: 'revision', title: 'Revision', desc: 'Last-day checklist.' },
+  { step: 14, id: 'bdinterview', title: 'BD Interview Guide', desc: 'Scenarios, Q&A, mock rounds for BD companies.' },
+  { step: 15, id: 'scenarios', title: 'Scenarios', desc: 'Production incidents.' },
+  { step: 16, id: 'revision', title: 'Revision', desc: 'Last-day checklist.' },
 ];
 
 export function Home() {
