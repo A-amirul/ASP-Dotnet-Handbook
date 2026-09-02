@@ -445,6 +445,287 @@ int RobRange(int[] nums, int lo, int hi) {
     return counts;
 }`,
     },
+    {
+      title: '21. LINQ — Find Duplicate Emails (ERP)',
+      english: 'From employee list, return emails appearing more than once — BD live coding favorite.',
+      bangla: 'Duplicate email — GroupBy, BD interview live coding।',
+      code: `var dup = employees
+    .GroupBy(e => e.Email)
+    .Where(g => g.Count() > 1)
+    .Select(g => new { Email = g.Key, Count = g.Count() });`,
+    },
+    {
+      title: '22. Second Highest Salary (Distinct + Skip)',
+      english: 'Second highest salary with duplicate salary values handled.',
+      bangla: 'Duplicate salary সহ second highest — Distinct + OrderByDescending + Skip(1)।',
+      code: `var second = employees.Select(e => e.Salary).Distinct()
+    .OrderByDescending(s => s).Skip(1).First();`,
+    },
+    {
+      title: '23. Missing Numbers 1..n',
+      english: 'Return missing numbers in sequence using Range and Except.',
+      bangla: '১..n missing number — Enumerable.Range + Except।',
+      code: `var missing = Enumerable.Range(1, n).Except(numbers);`,
+    },
+    {
+      title: '24. Employee Exists — Any() not Count',
+      english: 'Check existence with Any() — stops at first match.',
+      bangla: 'Exists check — Any(), Count()>0 নয়।',
+      code: `bool exists = employees.Any(e => e.Id == id);`,
+    },
+    {
+      title: '25. Top 3 Salary + Dept Average',
+      english: 'Top 3 by salary; group by department for average salary.',
+      bangla: 'Top 3 salary; department-wise Average — OrderByDescending.Take + GroupBy.Average।',
+      code: `var top3 = employees.OrderByDescending(e => e.Salary).Take(3);
+var deptAvg = employees.GroupBy(e => e.Department)
+    .Select(g => new { g.Key, Avg = g.Average(e => e.Salary) });`,
+    },
+    {
+      title: '26. Dynamic LINQ Search (IQueryable)',
+      english: 'Optional filters on name/department — query composes before ToListAsync.',
+      bangla: 'Optional filter — IQueryable compose, শেষে ToListAsync।',
+      code: `IQueryable<Employee> q = _context.Employees;
+if (!string.IsNullOrWhiteSpace(name)) q = q.Where(x => x.Name.Contains(name));
+if (!string.IsNullOrWhiteSpace(dept)) q = q.Where(x => x.Department.Name == dept);
+return await q.AsNoTracking().ToListAsync();`,
+    },
+    {
+      title: '27. Pagination + Search + Sort API',
+      english: 'Search, sort switch, Skip/Take with AsNoTracking.',
+      bangla: 'Search + sort + pagination — AsNoTracking।',
+      code: `var q = _context.Employees.AsNoTracking();
+if (!string.IsNullOrEmpty(search)) q = q.Where(x => x.Name.Contains(search));
+q = sortBy switch {
+  "salary" => q.OrderByDescending(x => x.Salary),
+  "name" => q.OrderBy(x => x.Name),
+  _ => q.OrderBy(x => x.Id)
+};
+return await q.Skip((page - 1) * size).Take(size).ToListAsync();`,
+    },
+    {
+      title: '28. Reverse String (Two Pointers)',
+      english: 'Reverse string in-place — O(n) time, O(1) extra space.',
+      bangla: 'Two pointer string reverse — O(n) time।',
+      code: `static string Reverse(string s) {
+    var c = s.ToCharArray();
+    for (int l = 0, r = c.Length - 1; l < r; l++, r--)
+        (c[l], c[r]) = (c[r], c[l]);
+    return new string(c);
+}`,
+    },
+    {
+      title: '29. SQL — Second Highest Salary',
+      english: 'T-SQL second highest salary subquery pattern.',
+      bangla: 'T-SQL second highest — MAX subquery।',
+      code: `SELECT MAX(Salary) FROM Employee
+WHERE Salary < (SELECT MAX(Salary) FROM Employee);`,
+    },
+    {
+      title: '30. SQL — Duplicate Email (GROUP BY HAVING)',
+      english: 'Find duplicate emails in SQL — interview classic.',
+      bangla: 'SQL duplicate email — GROUP BY HAVING COUNT>1।',
+      code: `SELECT Email, COUNT(*) AS Cnt FROM Employee
+GROUP BY Email HAVING COUNT(*) > 1;`,
+    },
+    {
+      title: '31. LINQ — Employees Joined Last 30 Days',
+      english: 'Filter employees where DateJoined >= today minus 30 days.',
+      bangla: 'গত ৩০ দিনে join করা employee — DateJoined filter।',
+      code: `var recent = employees
+    .Where(e => e.DateJoined >= DateTime.Today.AddDays(-30))
+    .ToList();`,
+    },
+    {
+      title: '32. LINQ — Highest Paid Per Department',
+      english: 'Return highest salary employee from each department.',
+      bangla: 'প্রতি department-এ highest salary employee — GroupBy + OrderByDescending + First।',
+      code: `var result = employees
+    .GroupBy(e => e.Department)
+    .Select(g => g.OrderByDescending(e => e.Salary).First());`,
+    },
+    {
+      title: '33. LINQ — Multiple Sort (Salary DESC, Name ASC)',
+      english: 'Sort by salary descending then name ascending.',
+      bangla: 'Salary descending, তারপর Name ascending — OrderByDescending.ThenBy।',
+      code: `var sorted = employees
+    .OrderByDescending(e => e.Salary)
+    .ThenBy(e => e.Name);`,
+    },
+    {
+      title: '34. LINQ — Intersect Common Elements',
+      english: 'Find common elements between two lists.',
+      bangla: 'দুটি list-এর common element — Intersect()।',
+      code: `var common = listA.Intersect(listB);`,
+    },
+    {
+      title: '35. Prime Number Check',
+      english: 'Return true if number is prime — check up to sqrt(n).',
+      bangla: 'Prime check — sqrt(n) পর্যন্ত loop।',
+      code: `static bool IsPrime(int n) {
+    if (n < 2) return false;
+    for (int i = 2; i <= Math.Sqrt(n); i++)
+        if (n % i == 0) return false;
+    return true;
+}`,
+    },
+    {
+      title: '36. Specification Pattern — Active Employees',
+      english: 'Encapsulate query logic in reusable specification applying to IQueryable.',
+      bangla: 'Specification Pattern — query logic reusable specification-এ।',
+      code: `public class ActiveEmployeeSpec {
+    public IQueryable<Employee> Apply(IQueryable<Employee> q) =>
+        q.Where(x => x.IsActive);
+}
+// Usage: spec.Apply(_context.Employees).ToListAsync();`,
+    },
+    {
+      title: '37. Bulk Insert — 50k Employees',
+      english: 'Import large employee list — use bulk extension or SqlBulkCopy, not foreach SaveChanges.',
+      bangla: '৫০k employee import — BulkInsert/SqlBulkCopy, foreach SaveChanges নয়।',
+      code: `// await context.BulkInsertAsync(employees); // EFCore.BulkExtensions
+// Or SqlBulkCopy for maximum throughput`,
+    },
+    {
+      title: '38. Rate Limiting — Login API (.NET 8)',
+      english: 'Fixed window rate limiter on login endpoint — 5 requests per minute.',
+      bangla: 'Login API rate limit — ৫ request/minute FixedWindowLimiter।',
+      code: `builder.Services.AddRateLimiter(o => {
+    o.AddFixedWindowLimiter("login", opt => {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(1);
+    });
+});
+app.UseRateLimiter();`,
+    },
+    {
+      title: '39. Distributed Cache Pattern',
+      english: 'Cache-aside: check Redis, miss then SQL, set cache, invalidate on update.',
+      bangla: 'Cache-aside: Redis check → SQL → set cache; update-এ invalidate।',
+      code: `var cached = await _cache.GetAsync(key);
+if (cached != null) return Deserialize(cached);
+var data = await _repo.GetByIdAsync(id);
+await _cache.SetAsync(key, Serialize(data));
+return data;
+// On update: await _cache.RemoveAsync(key);`,
+    },
+    {
+      title: '40. SQL — Running Total Salary',
+      english: 'Running total of salary ordered by EmployeeID using window function.',
+      bangla: 'Running total salary — SUM() OVER (ORDER BY EmployeeID)।',
+      code: `SELECT EmployeeID, Salary,
+  SUM(Salary) OVER (ORDER BY EmployeeID) AS RunningTotal
+FROM Employee;`,
+    },
+    {
+      title: '41. LINQ — Highest Salary Employee (MaxBy)',
+      english: 'Find employee with maximum salary — OrderByDescending First or MaxBy (.NET 6+).',
+      bangla: 'Highest salary employee — MaxBy বা OrderByDescending().First()।',
+      code: `var top = employees.MaxBy(e => e.Salary);
+// Or: employees.OrderByDescending(e => e.Salary).First();`,
+    },
+    {
+      title: '42. LINQ — Department Employee Count',
+      english: 'Group employees by department and return count per department.',
+      bangla: 'Department-wise count — GroupBy + Count()।',
+      code: `var counts = employees
+    .GroupBy(e => e.Department)
+    .Select(g => new { Department = g.Key, Total = g.Count() });`,
+    },
+    {
+      title: '43. Count Words in String',
+      english: 'Split string by whitespace and count non-empty tokens.',
+      bangla: 'Word count — Split + empty filter।',
+      code: `static int CountWords(string text) =>
+    text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;`,
+    },
+    {
+      title: '44. Remove Duplicate Numbers',
+      english: 'Return list with duplicates removed — Distinct or HashSet.',
+      bangla: 'Duplicate number remove — Distinct()।',
+      code: `var unique = numbers.Distinct().ToList();`,
+    },
+    {
+      title: '45. Filter Even Numbers',
+      english: 'Return only even numbers from a list.',
+      bangla: 'Even numbers — Where(n => n % 2 == 0)।',
+      code: `var evens = numbers.Where(n => n % 2 == 0);`,
+    },
+    {
+      title: '46. Top 5 Most Recent Joiners',
+      english: 'Order by DateJoined descending and take top 5.',
+      bangla: 'Top 5 recent join — OrderByDescending(DateJoined).Take(5)।',
+      code: `var recent = employees
+    .OrderByDescending(e => e.DateJoined)
+    .Take(5);`,
+    },
+    {
+      title: '47. Employees Without Department',
+      english: 'Find employees where Department is null or empty.',
+      bangla: 'Department null/empty employee — Where filter।',
+      code: `var noDept = employees
+    .Where(e => string.IsNullOrEmpty(e.Department));`,
+    },
+    {
+      title: '48. Oldest Employee',
+      english: 'Find employee with earliest DateOfBirth.',
+      bangla: 'Oldest employee — OrderBy(DateOfBirth).First()।',
+      code: `var oldest = employees
+    .OrderBy(e => e.DateOfBirth)
+    .First();`,
+    },
+    {
+      title: '49. Total Salary Sum',
+      english: 'Sum all employee salaries — handle empty list.',
+      bangla: 'Total salary — Sum(x => x.Salary)।',
+      code: `var total = employees.Sum(e => e.Salary);`,
+    },
+    {
+      title: '50. SQL — Nth Highest Salary (DENSE_RANK)',
+      english: 'Find 3rd highest salary using window function.',
+      bangla: 'Nth highest — DENSE_RANK() OVER (ORDER BY Salary DESC)।',
+      code: `SELECT Salary FROM (
+  SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS Rnk
+  FROM Employee
+) t WHERE Rnk = 3;`,
+    },
+    {
+      title: '51. Generic Repository Interface',
+      english: 'IRepository<T> with common CRUD — used when team needs test boundary beyond DbContext.',
+      bangla: 'Generic Repository — IRepository<T> CRUD abstraction।',
+      code: `public interface IRepository<T> where T : class {
+    Task<T?> GetByIdAsync(int id);
+    Task AddAsync(T entity);
+    void Update(T entity);
+    void Remove(T entity);
+}`,
+    },
+    {
+      title: '52. Optimistic Concurrency (RowVersion)',
+      english: 'Handle concurrent updates with Timestamp RowVersion and DbUpdateConcurrencyException.',
+      bangla: 'RowVersion + DbUpdateConcurrencyException handle।',
+      code: `public class Employee {
+    public byte[] RowVersion { get; set; } // [Timestamp]
+}
+// catch (DbUpdateConcurrencyException) → reload or merge`,
+    },
+    {
+      title: '53. Background Queue (Channel)',
+      english: 'Enqueue work items processed by IHostedService — do not block HTTP request.',
+      bangla: 'Background queue — Channel + HostedService worker।',
+      code: `await _channel.Writer.WriteAsync(job);
+// BackgroundService: await foreach (var job in _channel.Reader.ReadAllAsync())`,
+    },
+    {
+      title: '54. MediatR Command Handler (CQRS)',
+      english: 'Send command via IMediator — handler contains single use-case logic.',
+      bangla: 'MediatR — IRequest → handler, controller thin।',
+      code: `public record CreateEmployeeCommand(string Name) : IRequest<int>;
+public class Handler : IRequestHandler<CreateEmployeeCommand, int> {
+    public async Task<int> Handle(CreateEmployeeCommand req, CancellationToken ct) { ... }
+}
+// await _mediator.Send(new CreateEmployeeCommand("Amir"));`,
+    },
   ],
   interviewQuestions: [
     {

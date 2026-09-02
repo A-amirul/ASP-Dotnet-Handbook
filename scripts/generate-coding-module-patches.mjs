@@ -833,27 +833,27 @@ const SECTION_PATCHES = {
       },
     },
   },
-  'bd-bonus-erp-traps': {
+  'bd-learning-path': {
     explanation: {
       what: {
-        en: '**10 ERP trap questions:** Any vs Count, First vs Single, IQueryable, Task.WhenAll, transactions, concurrency.',
-        bn: '**১০ ERP trap** — Any/Count, First/Single, IQueryable, Task.WhenAll, transaction, concurrency।',
+        en: '**Study map** — which module to read for each topic. BD Interview module is scenarios only; no duplicate C#/SQL Q&A.',
+        bn: '**Study map** — কোন topic কোন module-এ। BD Interview = শুধু scenario, duplicate Q&A নেই।',
       },
       why: {
-        en: 'Filters tutorial watchers from developers who wrote production EF/SQL.',
-        bn: 'Tutorial vs production EF/SQL developer filter।',
+        en: 'Reading the same topic twice wastes time and confuses answers. Follow sidebar order.',
+        bn: 'Duplicate topic সময় নষ্ট — sidebar order follow করুন।',
       },
       how: {
-        en: 'Each trap: wrong pattern, correct pattern, one-line why.',
-        bn: 'Wrong, correct, one-line why।',
+        en: 'C# → Web → Database → Architecture → DevOps → Problem Solving → Interview Practice.',
+        bn: 'C# → Web → Database → Architecture → DevOps → Coding → Interview।',
       },
       analogy: {
-        en: 'Driving test trick questions — small detail, big consequence.',
-        bn: 'Driving test trick question।',
+        en: 'Like a school syllabus — one textbook per subject, in term order.',
+        bn: 'School syllabus — এক subject এক book, term order।',
       },
       realWorld: {
-        en: 'ERP code review catches Count()>0 and ToList().Where() often.',
-        bn: 'ERP review-এ Count()>0, ToList().Where() catch।',
+        en: 'Interview prep in 4 weeks: one phase per week, not random modules.',
+        bn: '৪ week prep — প্রতি week এক phase।',
       },
     },
   },
@@ -945,7 +945,6 @@ const allTasks = [
   ...extractTasksFromFile(path.join(root, 'problemSolving.ts')),
   ...extractTasksFromFile(path.join(root, 'algorithms.ts')),
   ...extractTasksFromFile(path.join(root, 'csharpProblems.ts')),
-  ...extractTasksFromFile(path.join(root, 'bdDotnetInterview.ts')),
 ];
 
 const entries = [];

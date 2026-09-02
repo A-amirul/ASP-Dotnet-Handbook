@@ -3,6 +3,7 @@ import { basicsData } from './basics';
 import { csharpData } from './csharp';
 import { linqData } from './linq';
 import { asyncData } from './async';
+import { dotnet10Data } from './dotnet10';
 import { aspnetData } from './aspnet';
 import { mvcoreData } from './mvcore';
 import { diData } from './di';
@@ -19,27 +20,29 @@ import { jobsData } from './jobs';
 import { distributedData } from './distributed';
 import { testingData } from './testing';
 import { observabilityData } from './observability';
-import { frontendData, systemDesignData, devopsData } from './advanced';
+import { loggingContent } from './logging';
+import { performanceContent } from './performance';
+import { devopsData, systemDesignData, frontendData } from './advanced';
+import { problemSolvingData } from './problemSolving';
+import { algorithmsData } from './algorithms';
+import { csharpProblemsData } from './csharpProblems';
+import { bdDotnetInterviewData } from './bdDotnetInterview';
+import { mdHandbookData } from './mdHandbook';
 import { codingTasks } from './codingTasks';
 import { scenariosData } from './scenarios';
 import { leadershipData } from './leadership';
 import { questionBankData } from './questionbank';
 import { trapsData } from './traps';
 import { revisionData } from './revision';
-import { loggingContent } from './logging';
-import { performanceContent } from './performance';
-import { dotnet10Data } from './dotnet10';
-import { problemSolvingData } from './problemSolving';
-import { algorithmsData } from './algorithms';
-import { csharpProblemsData } from './csharpProblems';
-import { bdDotnetInterviewData } from './bdDotnetInterview';
 
+/** Order matches NAV_GROUPS — learn C# → Web → DB → Architecture → DevOps → Coding → Interview */
 export const handbookData = [
   guideData,
   basicsData,
   csharpData,
   linqData,
   asyncData,
+  dotnet10Data,
   aspnetData,
   mvcoreData,
   diData,
@@ -59,19 +62,19 @@ export const handbookData = [
   loggingContent,
   performanceContent,
   devopsData,
-  systemDesignData,
-  frontendData,
-  codingTasks,
   problemSolvingData,
   algorithmsData,
   csharpProblemsData,
   bdDotnetInterviewData,
+  mdHandbookData,
+  codingTasks,
+  systemDesignData,
+  frontendData,
   scenariosData,
   leadershipData,
   questionBankData,
   trapsData,
   revisionData,
-  dotnet10Data,
 ];
 
 export {
@@ -80,6 +83,7 @@ export {
   csharpData,
   linqData,
   asyncData,
+  dotnet10Data,
   aspnetData,
   mvcoreData,
   diData,
@@ -101,15 +105,15 @@ export {
   devopsData,
   systemDesignData,
   frontendData,
-  codingTasks,
   problemSolvingData,
   algorithmsData,
   csharpProblemsData,
   bdDotnetInterviewData,
+  mdHandbookData,
+  codingTasks,
   scenariosData,
   leadershipData,
   questionBankData,
   trapsData,
   revisionData,
-  dotnet10Data,
 };

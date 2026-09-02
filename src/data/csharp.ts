@@ -1,12 +1,485 @@
 export const csharpData = {
   id: 'csharp',
   title: 'C# Language, OOP & Internals',
-  description: 'From types and SOLID to GC, Span, and the answers senior interviewers expect — why, internals, trade-offs, failure modes.',
+  description: 'Four OOP pillars (Encapsulation, Abstraction, Inheritance, Polymorphism), SOLID, types, GC, Span — with bilingual explanations and interview answers.',
   sections: [
     {
-      topic: "OOP & SOLID Principles",
-      english: "SOLID principles ensure that your code is maintainable, scalable, and easy to test. Seniors must explain not just what they are, but how they avoid technical debt.",
-      bangla: "সলিড প্রিন্সিপল হলো ক্লিন কোড লেখার মূল মন্ত্র। ইন্টারভিউতে প্রতিটা লেটারের মানে এবং প্রাকটিক্যাল উদাহরণসহ জানতে চাওয়া হয়। এটি কোডকে ফ্লেক্সিবল রাখে।",
+      topic: 'Class, Object & Access Modifiers',
+      difficulty: 'junior',
+      english: 'A class is a blueprint; an object is a runtime instance with its own state. Access modifiers control who can see fields, properties, and methods — the foundation of every OOP design in C#.',
+      bangla: 'Class হলো blueprint, object হলো runtime instance। Access modifier দিয়ে কে field/property/method দেখতে পারবে সেটা নিয়ন্ত্রণ — OOP-এর প্রথম ধাপ।',
+      details: `
+### Class vs Object
+| Concept | Meaning | Example |
+| :--- | :--- | :--- |
+| **Class** | Template / blueprint | \`public class Employee { ... }\` |
+| **Object** | Instance in memory | \`var emp = new Employee();\` |
+
+### Members of a class
+- **Fields** — raw data (prefer \`private\`)
+- **Properties** — controlled access (\`get\` / \`set\` / \`init\`)
+- **Methods** — behavior
+- **Constructors** — initialize new objects
+- **Static members** — belong to the type, not one instance
+
+### Access modifiers (C#)
+| Modifier | Who can access |
+| :--- | :--- |
+| \`public\` | Anywhere |
+| \`private\` | Same class only |
+| \`protected\` | Class + derived classes |
+| \`internal\` | Same assembly |
+| \`protected internal\` | Derived OR same assembly |
+| \`private protected\` | Derived in same assembly |
+
+### \`static\` vs instance
+- **Instance:** each object has its own copy (\`emp.Name\`)
+- **Static:** one shared copy for the whole app (\`Employee.MaxLeaveDays\`)
+- Static constructor runs once before first use of the type
+      `,
+      commonMistakes: [
+        'Making all fields public — breaks encapsulation.',
+        'Using static for everything — hard to test and mock.',
+        'Confusing class (type) with object (instance).',
+      ],
+      bestPractices: [
+        'Keep fields private; expose via properties.',
+        'Use static only for true shared constants or factories.',
+        'One class = one clear responsibility (leads to SRP).',
+      ],
+      interviewQs: [
+        {
+          q: 'What is the difference between a class and an object?',
+          a: 'A class defines structure and behavior — it is a compile-time blueprint. An object is a heap-allocated instance created with new at runtime, with its own field values. You can create many objects from one class; each has independent state but shares the same method definitions.',
+          bangla: 'Class = blueprint (compile time), Object = new দিয়ে তৈরি instance (runtime) — এক class থেকে অনেক object, প্রতিটার আলাদা state।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'Why use private fields instead of public fields?',
+          a: 'Private fields hide implementation. Properties can validate on set (salary cannot be negative), trigger change notifications, or log access. Public fields allow any caller to put the object in an invalid state — encapsulation prevents that.',
+          bangla: 'Private field = implementation hide; property = validation/control। Public field দিলে invalid state যেকোনো caller দিতে পারে।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'When would you use static members?',
+          a: 'For data or behavior that does not belong to a single instance: constants (MaxRetryCount), utility methods (DateTime.UtcNow), or singleton factories. Avoid static mutable state in web apps — it breaks under concurrency and is hard to unit test.',
+          bangla: 'Constant/utility-তে static; web app-এ static mutable state avoid — test ও thread-safe সমস্যা।',
+          difficulty: 'mid',
+        },
+      ],
+      practice: 'Create an Employee class with private _salary, public Name property, and a static MaxEmployees constant.',
+      code: `public class Employee
+{
+    private decimal _salary;
+    public static int MaxEmployees { get; } = 10_000;
+
+    public string Name { get; set; }
+
+    public decimal Salary
+    {
+        get => _salary;
+        set => _salary = value >= 0 ? value : throw new ArgumentOutOfRangeException();
+    }
+
+    public Employee(string name) => Name = name;
+}
+
+var emp = new Employee("Amir") { Salary = 50_000m };`,
+    },
+    {
+      topic: 'Encapsulation — Data Hiding & Properties',
+      difficulty: 'junior',
+      english: 'Encapsulation bundles data and behavior inside a class and hides internal details. Callers interact through a controlled public surface (properties/methods) so invariants stay valid.',
+      bangla: 'Encapsulation মানে data + behavior এক class-এ bundle করা এবং ভিতরের detail লুকানো। বাইরে থেকে property/method দিয়ে controlled access — invalid state রোধ।',
+      details: `
+### What encapsulation achieves
+1. **Hide implementation** — callers do not depend on how salary is stored
+2. **Validate input** — reject negative salary in the setter
+3. **Change internals safely** — switch from decimal to Money type without breaking callers
+
+### Property patterns in C#
+| Pattern | Use case |
+| :--- | :--- |
+| Auto-property \`{ get; set; }\` | Simple DTOs |
+| Full property with backing field | Validation, lazy init |
+| \`init\` only | Immutable after construction (records) |
+| \`private set\` | Read-only from outside |
+| Expression-bodied \`=> \` | Computed property (FullName) |
+
+### Auto-implemented vs explicit backing field
+Use explicit backing field when you need validation, logging, or lazy loading. Use auto-property when a plain get/set is enough.
+
+### DDD-style encapsulation
+Domain entities expose behavior methods (\`employee.RaiseSalary(10m)\`) instead of public setters — prevents anemic domain models.
+      `,
+      commonMistakes: [
+        'Anemic model: only getters/setters, no behavior.',
+        'Validation in controller instead of entity — duplicated rules.',
+        'Exposing mutable collections publicly (List<T> property with public set).',
+      ],
+      bestPractices: [
+        'Return IReadOnlyList<T> from properties when exposing collections.',
+        'Validate in the property setter or domain method, not scattered in UI.',
+        'Use required modifier (C# 11+) for mandatory init properties.',
+      ],
+      interviewQs: [
+        {
+          q: 'What is encapsulation in OOP?',
+          a: 'Encapsulation is hiding internal state and requiring all interaction through public methods and properties. The class decides what is allowed (e.g. salary > 0). This reduces coupling — callers depend on the contract, not private fields.',
+          bangla: 'Internal state লুকানো + public property/method দিয়ে access — class নিজেই rule enforce করে, coupling কমে।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'Property vs field — when use which?',
+          a: 'Almost always use properties for public API. Fields should be private backing storage. Properties allow future validation, computed values, and interface implementation without breaking callers.',
+          bangla: 'Public API-তে property; field private backing-এ। Property দিয়ে পরে validation add করা যায় breaking change ছাড়াই।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'What is an anemic domain model and why avoid it?',
+          a: 'An anemic model is a class with only data properties and no behavior — all logic lives in services. It spreads business rules across layers and duplicates validation. Rich domain models encapsulate rules inside the entity (e.g. Order.AddLineItem checks stock).',
+          bangla: 'Anemic = শুধু data, logic service-এ scattered — rich model-এ behavior entity-র ভিতরে, rule duplicate কমে।',
+          difficulty: 'mid',
+        },
+      ],
+      practice: 'Refactor a public decimal Salary field into a property that logs every change and rejects values over 1 crore.',
+      code: `public class BankAccount
+{
+    private decimal _balance;
+
+    public decimal Balance
+    {
+        get => _balance;
+        private set
+        {
+            if (value < 0) throw new InvalidOperationException("Balance cannot be negative.");
+            _balance = value;
+        }
+    }
+
+    public void Deposit(decimal amount)
+    {
+        if (amount <= 0) throw new ArgumentException("Amount must be positive.");
+        Balance = _balance + amount; // uses setter logic if you add it
+    }
+}`,
+    },
+    {
+      topic: 'Inheritance — base, derived & sealed',
+      difficulty: 'junior',
+      english: 'Inheritance lets a derived class reuse and extend a base class (is-a relationship). C# supports single inheritance for classes; use interfaces for additional contracts.',
+      bangla: 'Inheritance-এ derived class base class-এর code reuse ও extend করে (is-a)। C#-এ class-এ single inheritance; extra contract-এ interface।',
+      details: `
+### Inheritance syntax
+\`\`\`csharp
+public class Person { public string Name { get; set; } }
+public class Employee : Person { public decimal Salary { get; set; } }
+\`\`\`
+
+### Key keywords
+| Keyword | Purpose |
+| :--- | :--- |
+| \`base\` | Call parent constructor or method |
+| \`: Person(name)\` | Chain constructor to base |
+| \`sealed class\` | No further inheritance |
+| \`sealed override\` | Stop overriding downstream |
+
+### Constructor chaining
+Derived constructor must call a base constructor (explicitly or implicitly). Use \`base(...)\` when parent needs parameters.
+
+### When inheritance fits
+- True **is-a**: \`Manager : Employee\`
+- Shared implementation in a family of types
+
+### When inheritance hurts
+- Deep hierarchies (fragile base class)
+- Subclass only needs one method — prefer interface + composition
+      `,
+      commonMistakes: [
+        'Inheriting for code reuse only (Employee : List<Order>) — wrong is-a.',
+        'Forgetting to call base() in constructor when base has no parameterless ctor.',
+        'Overriding without understanding LSP — subclass breaks parent contract.',
+      ],
+      bestPractices: [
+        'Favor shallow inheritance trees (2–3 levels max in apps).',
+        'Mark classes sealed by default unless designed for extension.',
+        'Use protected for members meant for subclasses only.',
+      ],
+      interviewQs: [
+        {
+          q: 'What is inheritance and what is single inheritance in C#?',
+          a: 'Inheritance allows a derived class to inherit members from a base class and add or override behavior. C# allows only one base class per class (single inheritance) to avoid diamond problem complexity. Multiple inheritance of behavior is achieved via multiple interfaces.',
+          bangla: 'Derived base থেকে inherit করে — C#-এ এক class এক base; multiple behavior = multiple interface।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'What does the base keyword do?',
+          a: 'base() calls a parent constructor during derived object construction. base.MethodName() invokes the parent implementation from an override — useful when extending rather than replacing behavior (e.g. logging wrapper around base.Save()).',
+          bangla: 'base() = parent constructor; base.Method() = parent implementation call override-এর ভিতরে।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'What is a sealed class?',
+          a: 'A sealed class cannot be inherited. Use it when the type is complete and extension would break invariants (e.g. string is sealed). sealed override on a method prevents further overrides in downstream classes.',
+          bangla: 'sealed class = আর inherit করা যাবে না; sealed override = আর override করা যাবে না।',
+          difficulty: 'mid',
+        },
+      ],
+      practice: 'Create Shape base with virtual Area(); Circle and Rectangle override it.',
+      code: `public class Shape
+{
+    public virtual double Area() => 0;
+}
+
+public class Circle : Shape
+{
+    public double Radius { get; init; }
+    public override double Area() => Math.PI * Radius * Radius;
+}
+
+public sealed class Square : Shape
+{
+    public double Side { get; init; }
+    public override double Area() => Side * Side;
+}`,
+    },
+    {
+      topic: 'Polymorphism — Overloading vs Overriding',
+      difficulty: 'junior',
+      english: 'Polymorphism means one interface, many forms. C# has compile-time polymorphism (method overloading) and runtime polymorphism (virtual/override through a base reference).',
+      bangla: 'Polymorphism = এক interface, অনেক form। C#-এ compile-time (overloading) ও runtime (virtual/override) দুই ধরন।',
+      details: `
+### Method overloading (compile-time)
+Same method name, **different parameter list** in the same class. Resolved at compile time.
+
+\`\`\`csharp
+public int Add(int a, int b) => a + b;
+public int Add(int a, int b, int c) => a + b + c;
+public double Add(double a, double b) => a + b;
+\`\`\`
+
+| | Overloading | Overriding |
+| :--- | :--- | :--- |
+| **When** | Compile time | Runtime |
+| **Where** | Usually same class | Parent + child |
+| **Signature** | Different parameters | Same signature |
+| **Keywords** | None | \`virtual\` / \`override\` |
+
+### Method overriding (runtime)
+Parent marks method \`virtual\` (or \`abstract\`); child uses \`override\`. Calling through base reference runs child implementation.
+
+\`\`\`csharp
+Shape s = new Circle { Radius = 5 };
+Console.WriteLine(s.Area()); // Circle's Area at runtime
+\`\`\`
+
+### \`new\` keyword (hiding, not overriding)
+If parent method is not virtual, child can \`new\` hide it — no runtime polymorphism; base reference calls parent version. Avoid in domain code; use override when possible.
+      `,
+      commonMistakes: [
+        'Changing only return type to overload — invalid in C#.',
+        'Using new instead of override and expecting polymorphism.',
+        'Forgetting virtual on base — override will not compile.',
+      ],
+      bestPractices: [
+        'Use override for intentional polymorphic behavior.',
+        'Keep overloads readable — different intent, not tiny parameter tweaks.',
+        'Document when new hides a method (rare).',
+      ],
+      interviewQs: [
+        {
+          q: 'Difference between method overloading and overriding?',
+          a: 'Overloading: same name, different parameters, same class, resolved at compile time. Overriding: same signature, parent virtual + child override, resolved at runtime based on actual object type. Overloading is convenience; overriding is polymorphism.',
+          bangla: 'Overloading = compile time, different params; Overriding = runtime, virtual/override, same signature।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'What is runtime polymorphism?',
+          a: 'A variable typed as Base can hold a Derived instance. When you call a virtual method, the runtime dispatches to Derived override. This enables plug-in behavior: List<Shape> each calling Area() gets the correct implementation without if/else type checks.',
+          bangla: 'Base reference-এ Derived object — virtual method call করলে runtime-এ Derived version চলে; if/else type check লাগে না।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'virtual vs override vs new?',
+          a: 'virtual on base allows override in child. override replaces virtual implementation with polymorphism. new hides a non-virtual member — no polymorphism; only useful when you cannot change the base class. Prefer virtual/override for extensibility.',
+          bangla: 'virtual = override allowed; override = runtime polymorphism; new = hide, polymorphism নেই — override prefer করুন।',
+          difficulty: 'mid',
+        },
+      ],
+      practice: 'Implement IPayment with Pay(); Bkash and Card override/hide appropriately and demonstrate runtime dispatch.',
+      code: `public class Animal
+{
+    public virtual string Speak() => "...";
+}
+
+public class Dog : Animal
+{
+    public override string Speak() => "Woof";
+}
+
+Animal a = new Dog();
+Console.WriteLine(a.Speak()); // Woof — runtime polymorphism`,
+    },
+    {
+      topic: 'Abstraction — Abstract Classes & Interfaces',
+      difficulty: 'junior',
+      english: 'Abstraction exposes what an object does, not how. Abstract classes and interfaces define contracts; concrete classes provide implementations. This is the bridge to SOLID and testable design.',
+      bangla: 'Abstraction = কী করবে দেখায়, কীভাবে করবে লুকায়। Abstract class ও interface contract; concrete class implementation — SOLID ও testable design-এর ভিত্তি।',
+      details: `
+### Abstraction in practice
+- **Abstract class:** can have abstract members (no body) + concrete shared code
+- **Interface:** pure contract (what capabilities a type has)
+- **Concrete class:** full implementation you can \`new\`
+
+### Abstract class rules
+- Cannot instantiate \`new AbstractShape()\`
+- Can have fields, constructors, concrete methods
+- Child must implement all abstract members
+
+### Interface rules (C#)
+- A class can implement **many** interfaces
+- No instance fields (before C# 8 default members were rare)
+- Naming: \`IRepository\`, \`IPaymentGateway\`
+
+### Abstraction vs Encapsulation
+| | Encapsulation | Abstraction |
+| :--- | :--- | :--- |
+| **Focus** | Hide internal state | Hide complexity, show essentials |
+| **Example** | private _balance | \`IPayment.Pay()\` without knowing Stripe details |
+      `,
+      commonMistakes: [
+        'Creating interface for every class without a second implementation.',
+        'Putting business logic inside interface default methods in app code.',
+        'Using abstract class when only contract is needed.',
+      ],
+      bestPractices: [
+        'Program to interfaces (\`IPayment payment\`) not concretions.',
+        'Abstract class when subclasses share state + code; interface for capability.',
+        'Keep interfaces small (ISP).',
+      ],
+      interviewQs: [
+        {
+          q: 'What is abstraction in OOP?',
+          a: 'Abstraction simplifies complex systems by exposing only essential features. Users of IPaymentService call Pay() without knowing card tokenization or gateway HTTP details. It reduces cognitive load and allows swapping implementations (Bkash vs Stripe) without changing callers.',
+          bangla: 'Abstraction = শুধু essential feature দেখানো — Pay() call, ভিতরে Stripe/Bkash hidden; implementation swap সহজ।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'Can you instantiate an abstract class?',
+          a: 'No. Compiler error on new AbstractClass(). You use abstract types as references holding concrete subclasses. Abstract classes may still have constructors called by derived classes via base().',
+          bangla: 'Abstract class new করা যায় না — concrete subclass দিয়ে reference hold করা যায়।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'Encapsulation vs abstraction — difference?',
+          a: 'Encapsulation hides data inside a class (private fields, public properties). Abstraction hides implementation complexity at a higher level (interface hides payment provider). Encapsulation is class-level; abstraction is design-level contract between components.',
+          bangla: 'Encapsulation = class-এ data hide; Abstraction = component-এ implementation hide (interface)।',
+          difficulty: 'mid',
+        },
+      ],
+      practice: 'Define INotifier with Send(); implement EmailNotifier and SmsNotifier; inject INotifier into OrderService.',
+      code: `public interface INotifier
+{
+    Task SendAsync(string to, string message);
+}
+
+public abstract class NotifierBase : INotifier
+{
+    protected abstract string Channel { get; }
+    public abstract Task SendAsync(string to, string message);
+}
+
+public class EmailNotifier : NotifierBase
+{
+    protected override string Channel => "Email";
+    public override Task SendAsync(string to, string message) =>
+        Task.CompletedTask; // send via SMTP
+}`,
+    },
+    {
+      topic: 'Composition vs Inheritance & Object Fundamentals',
+      difficulty: 'mid',
+      english: 'Composition (has-a) builds behavior by combining objects; inheritance (is-a) extends a base. Prefer composition when behavior varies independently. Also covers Object.Equals, GetHashCode, ToString, and nested types.',
+      bangla: 'Composition = has-a (object combine); Inheritance = is-a (extend)। Behavior আলাদা vary করলে composition prefer। Object.Equals/GetHashCode/ToString-ও এখানে।',
+      details: `
+### Composition vs Inheritance
+| | Inheritance (is-a) | Composition (has-a) |
+| :--- | :--- | :--- |
+| **Relationship** | Manager **is an** Employee | Car **has an** Engine |
+| **Flexibility** | Fixed hierarchy | Swap parts at runtime |
+| **Example** | \`class Manager : Employee\` | \`class OrderService { private IPayment _pay; }\` |
+
+**Rule:** "Favor composition over inheritance" — Strategy, Decorator use composition.
+
+### Object class (System.Object)
+Every type inherits Object:
+- \`ToString()\` — string representation (override in domain types)
+- \`Equals(object)\` — value/reference equality (override with GetHashCode)
+- \`GetHashCode()\` — hash for dictionaries (must match Equals)
+- \`GetType()\` — runtime type info
+
+### Equality patterns
+- **Reference equality:** same heap object (\`ReferenceEquals\`)
+- **Value equality:** same data (records do this automatically)
+- Override both \`Equals\` and \`GetHashCode\` together for custom structs/classes used as keys
+
+### Other OOP features
+- **Nested class** — helper inside outer class
+- **Partial class** — split one class across files (designer + hand code)
+- **this** — current instance reference
+      `,
+      commonMistakes: [
+        'Deep inheritance for every feature flag.',
+        'Override Equals without GetHashCode — Dictionary breaks.',
+        'Using inheritance to reuse a single method from unrelated type.',
+      ],
+      bestPractices: [
+        'Inject dependencies (composition) instead of inheriting utility base classes.',
+        'Use records for value-based equality DTOs.',
+        'Override ToString on entities for logging readability.',
+      ],
+      interviewQs: [
+        {
+          q: 'Composition vs inheritance — when use which?',
+          a: 'Use inheritance when there is a stable is-a relationship and shared implementation (Animal → Dog). Use composition when you combine behaviors (OrderService has IPayment, ILogger). Composition avoids fragile base classes and allows swapping implementations via DI.',
+          bangla: 'is-a + shared code = inheritance; has-a + swap behavior = composition — DI-তে composition বেশি flexible।',
+          difficulty: 'mid',
+        },
+        {
+          q: 'Why override GetHashCode when you override Equals?',
+          a: 'Dictionary and HashSet use hash codes for bucketing. If two equal objects return different hash codes, lookups fail or degrade to linear search. Contract: if a.Equals(b) then a.GetHashCode() == b.GetHashCode().',
+          bangla: 'Equals override করলে GetHashCode-ও override — না হলে Dictionary/HashSet lookup ভুল হয়।',
+          difficulty: 'mid',
+        },
+        {
+          q: 'What is the is-a vs has-a relationship?',
+          a: 'is-a is inheritance: a Square is a Shape. has-a is composition: an Employee has a Address object. Misusing is-a (Stack : List) exposes wrong API and violates LSP. has-a keeps boundaries clear.',
+          bangla: 'is-a = inherit; has-a = field হিসেবে অন্য object — Stack : List ভুল is-a উদাহরণ।',
+          difficulty: 'junior',
+        },
+      ],
+      practice: 'Replace a NotificationSender : EmailSender inheritance with composition using INotifier injected.',
+      code: `// Composition — preferred
+public class OrderService
+{
+    private readonly IPayment _payment;
+    private readonly INotifier _notifier;
+
+    public OrderService(IPayment payment, INotifier notifier)
+    {
+        _payment = payment;
+        _notifier = notifier;
+    }
+}
+
+// Value equality (manual)
+public record EmployeeId(int Value);
+// record gives Equals/GetHashCode/ToString free`,
+    },
+    {
+      topic: "SOLID Principles",
+      english: "SOLID principles turn OOP pillars into maintainable design. Seniors must explain not just what they are, but how they avoid technical debt.",
+      bangla: "SOLID = OOP-কে maintainable design-এ রূপ দেয়। ইন্টারভিউতে প্রতিটা principle-এর মানে ও practical example জানতে চায়।",
       details: `
 | Principle | Description | key Goal |
 | :--- | :--- | :--- |
@@ -636,6 +1109,10 @@ catch (DbUpdateConcurrencyException ex)
   ],
   quickRevision: {
     concepts: [
+      'Four pillars: Encapsulation, Abstraction, Inheritance, Polymorphism',
+      'Overloading (compile) vs Overriding (runtime virtual/override)',
+      'Composition has-a vs Inheritance is-a',
+      'Access modifiers: public, private, protected, internal',
       'SOLID with a real example each',
       'Interface vs abstract class (and C# 8 defaults)',
       'Value vs reference, boxing',
@@ -648,6 +1125,11 @@ catch (DbUpdateConcurrencyException ex)
       'Exceptions at boundaries, not for 404s',
     ],
     questions: [
+      'Class vs object?',
+      'Encapsulation vs abstraction?',
+      'Overloading vs overriding?',
+      'virtual vs override vs new?',
+      'Composition vs inheritance?',
       'DIP vs DI?',
       'When abstract class over interface?',
       'Where does a struct field of a class live?',
@@ -675,11 +1157,12 @@ catch (DbUpdateConcurrencyException ex)
     ],
   },
   revisionSummary: `
+- **OOP Pillars**: Encapsulation (hide data), Abstraction (hide complexity), Inheritance (is-a reuse), Polymorphism (one interface, many forms).
 - **C# Mastery** requires balance between syntax knowledge and runtime understanding.
 - **Memory**: Know the difference between Managed (GC) and Unmanaged (IDisposable) resources.
 - **Async**: Always go "Async all the way" to avoid deadlocks.
 - **OOP**: SOLID is not a rule, but a guide to prevent spaghetti code.
 - **Types**: Use Records for DTOs, Classes for business logic, and Structs sparingly.
   `,
-  summary: "C# এ ভালো করার জন্য OOP, সলিড প্রিন্সিপল এবং মেমোরি ম্যানেজমেন্টের ওপর ক্লিয়ার আইডিয়া থাকতে হবে। বিশেষ করে async/await এবং জেনেরিক্স আধুনিক .NET ডেভেলপমেন্টের জন্য অপরিহার্য।"
+  summary: "C# ও OOP-এ ভালো করতে চার pillar (Encapsulation, Abstraction, Inheritance, Polymorphism), SOLID, access modifier, composition vs inheritance, এবং memory/async জানতে হবে।"
 };

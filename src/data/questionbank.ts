@@ -45,6 +45,18 @@ Use the Interview focus accordion. Each item is Question → Answer → Bangla �
           bangla: 'ইন্টারফেস কন্ট্রাক্ট, অ্যাবস্ট্রাক্ট শেয়ার্ড কোড।',
           difficulty: 'mid',
         },
+        {
+          q: 'Any() vs Count() > 0?',
+          a: 'Any() stops at the first match — O(1) best case with an index. Count() scans or counts all rows. For existence checks always use Any(). Count() is for when you need the total.',
+          bangla: 'Exists check → Any(); total দরকার হলে Count()।',
+          difficulty: 'junior',
+        },
+        {
+          q: 'SingleOrDefaultAsync vs FirstOrDefaultAsync for unique email?',
+          a: 'SingleOrDefaultAsync expects zero or one row — throws if duplicates exist, surfacing data bugs. FirstOrDefaultAsync returns first of many silently. Use Single when the business rule says unique (email, employee code).',
+          bangla: 'Unique key → SingleOrDefault; duplicate হলে exception = data bug catch।',
+          difficulty: 'mid',
+        },
       ],
       practice: 'Answer all five out loud in under six minutes.',
       code: `IQueryable<Order> q = db.Orders.Where(o => o.Paid);
@@ -164,43 +176,6 @@ var page = await q.OrderBy(o => o.Id).Skip(20).Take(20).ToListAsync(ct);`,
         },
       ],
       practice: 'Write two STAR stories on paper: one incident, one disagreement.',
-    },
-    {
-      topic: 'BD ERP Interview Essentials (from company guides)',
-      difficulty: 'mid',
-      english:
-        'Extra trap questions common at Brain Station 23, TigerIT, Cefalo, NEXT IT, REVE, BJIT, Southtech: LINQ vs SQL, Any vs Count, transaction choice, concurrency, SARGable queries, honest answers about Kafka/K8s.',
-      bangla:
-        'BD ERP কোম্পানিতে common trap: LINQ vs SQL, Any vs Count, transaction, concurrency, SARGable query, Kafka/K8s-এ সৎ উত্তর।',
-      details: `
-See **BD Interview Guide** module for full scenarios 1–40, mock rounds, and live coding.
-
-Quick traps:
-- **LINQ vs SQL:** LINQ is type-safe C# translated by EF; SQL is string-based on the server.
-- **SARGable:** avoid functions on indexed columns (\`YEAR(Date)\` → date range).
-- **Honesty:** if you studied Kafka but have no production use, say so with architecture knowledge.
-      `,
-      interviewQs: [
-        {
-          q: 'LINQ vs SQL — difference?',
-          a: 'SQL queries the database directly as text. LINQ is a C# query syntax that EF Core translates to SQL with compile-time checking and strong typing. Prefer LINQ in application code; raw SQL when you need hints, SPs, or plan-specific tuning.',
-          bangla: 'SQL = DB text; LINQ = C# → EF SQL, compile-time safe।',
-          difficulty: 'mid',
-        },
-        {
-          q: 'How do you optimize a slow SQL query (BD interview checklist)?',
-          a: 'Execution plan first. Fix table scans with indexes. Avoid SELECT *. Use SARGable predicates. Reduce joins. Add pagination. Compare duration before and after. Mention STATISTICS IO/TIME in investigation narrative.',
-          bangla: 'Plan → index → columns → SARGable → pagination → before/after measure।',
-          difficulty: 'mid',
-        },
-        {
-          q: 'Have you used Kubernetes in production?',
-          a: 'If no: "Not in production yet, but I understand pods, deployments, services, and scaling from hands-on labs. I can ramp up quickly with team guidance." Never claim false production experience.',
-          bangla: 'Production না থাকলে সৎ উত্তর — concept জানি, শিখতে প্রস্তুত।',
-          difficulty: 'mid',
-        },
-      ],
-      practice: 'Link to /bdinterview and complete one mock round out loud.',
     },
   ],
   quickRevision: {

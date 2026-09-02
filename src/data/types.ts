@@ -130,8 +130,9 @@ export const NAV_GROUPS: NavGroup[] = [
   { title: 'Start Here', ids: ['guide'] },
   { title: 'C# Language', ids: ['basics', 'csharp', 'linq', 'async', 'dotnet10'] },
   { title: 'ASP.NET Platform', ids: ['aspnet', 'mvcore', 'di', 'webapi', 'apidocs'] },
-  { title: 'Data', ids: ['database', 'sql'] },
-  { title: 'Architecture', ids: ['architecture', 'patterns'] },
-  { title: 'Production', ids: ['security', 'caching', 'messaging', 'jobs', 'distributed', 'testing', 'observability', 'logging', 'performance', 'devops'] },
-  { title: 'Interview Prep', ids: ['systemdesign', 'frontend', 'problemsolving', 'algorithms', 'csharpproblems', 'bdinterview', 'tasks', 'scenarios', 'leadership', 'questionbank', 'traps', 'revision'] },
+  { title: 'Database & SQL', ids: ['database', 'sql'] },
+  { title: 'Architecture & Patterns', ids: ['architecture', 'patterns'] },
+  { title: 'Production & DevOps', ids: ['security', 'caching', 'messaging', 'jobs', 'distributed', 'testing', 'observability', 'logging', 'performance', 'devops'] },
+  { title: 'Problem Solving & Algorithms', ids: ['problemsolving', 'algorithms', 'csharpproblems'] },
+  { title: 'Interview Practice', ids: ['bdinterview', 'mdhandbook', 'tasks', 'scenarios', 'systemdesign', 'frontend', 'leadership', 'questionbank', 'traps', 'revision'] },
 ];

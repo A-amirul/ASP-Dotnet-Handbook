@@ -63,27 +63,19 @@ export const guideData = {
       english: 'Do not jump randomly. Each phase unlocks the next. Finish C# memory and async before ASP.NET concurrency questions. Finish EF Core and SQL before system design storage choices. Finish distributed systems before microservices design interviews.',
       bangla: 'এলোমেলো পড়বেন না। প্রতিটা ফেজ পরের ফেজ আনলক করে — অ্যাসিঙ্ক না জেনে কনকারেন্সি, SQL না জেনে সিস্টেম ডিজাইন করা যায় না।',
       details: `
-### Recommended order (do not skip)
+### Recommended order (follow sidebar — no duplicate topics)
 
-| Phase | Module | Master before moving on |
+| Phase | Modules | Master before moving on |
 | :--- | :--- | :--- |
-| 1 | C# & OOP | Value vs ref, GC, SOLID, interface vs abstract |
-| 2 | LINQ & Async | Deferred execution, IQueryable, deadlock, CancellationToken |
-| 3 | ASP.NET Core | Pipeline order, DI lifetimes, filters, ProblemDetails |
-| 4 | EF Core & SQL | Tracking, N+1, indexes, isolation levels |
-| 5 | Architecture & Patterns | Clean Architecture, when NOT to use a pattern |
-| 6 | Security | JWT vs cookie, OWASP, secrets |
-| 7 | Redis & Messaging | Cache stampede, at-least-once, idempotency |
-| 8 | Microservices | Saga, outbox, when NOT to split |
-| 9 | Docker & Cloud | Multi-stage images, Key Vault, health checks |
-| 10 | System Design | Requirements → bottlenecks → trade-offs |
-| 11 | Problem Solving | UMPIRE framework, hash/two-pointer patterns, live string/array tasks |
-| 12 | Algorithms | Big-O, binary search, trees, graphs, DP — C# implementations |
-| 13 | C# DSA & .NET Tasks | Dictionary/Stack/Queue, LINQ group/top-N, CSV parse, validation, decimal |
-| 14 | BD Interview Guide | 40 scenarios, 80+ Q&A, mock rounds, live coding (Brain Station, TigerIT, ERP) |
-| 15 | Coding Tasks | Real-world senior machine-test scenarios |
-| 16 | Scenarios | 100 production stories |
-| 17 | Mock interviews | Speak answers out loud, 45 minutes timed |
+| **1 — C#** | Basics → C# & OOP → LINQ → Async → .NET 10 | Types, OOP, IQueryable, async, GC |
+| **2 — Web** | ASP.NET → MVC → DI → Web API → API Docs | Pipeline, lifetimes, REST, JWT |
+| **3 — Database** | EF Core → SQL Server | Tracking, N+1, indexes, transactions |
+| **4 — Architecture** | Architecture → Patterns | Clean Architecture, SOLID, when NOT to over-engineer |
+| **5 — Production & DevOps** | Security → Caching → Messaging → Jobs → Distributed → Testing → Observability → Logging → Performance → **DevOps** | Redis, RabbitMQ, Docker, CI/CD |
+| **6 — Coding** | **Problem Solving** → **Algorithms** → **C# DSA & .NET Tasks** | UMPIRE, Big-O, collections, LINQ live coding |
+| **7 — Interview** | BD Scenarios → **Uploaded MD Topics** → Tasks → Scenarios → Question Bank → Revision | All Doc.md + Doc2.md topics verified here |
+
+**Do not study the same topic in two modules.** C#/LINQ → csharp and linq modules. Database → database and sql modules. Live LINQ coding → csharpproblems module. BD scenarios only → bdinterview module.
 
 ### Daily loop (90 minutes)
 1. Read one section (20m)
