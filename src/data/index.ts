@@ -26,7 +26,12 @@ import { leadershipData } from './leadership';
 import { questionBankData } from './questionbank';
 import { trapsData } from './traps';
 import { revisionData } from './revision';
+import { loggingContent } from './logging';
+import { performanceContent } from './performance';
 import { dotnet10Data } from './dotnet10';
+import { problemSolvingData } from './problemSolving';
+import { algorithmsData } from './algorithms';
+import { csharpProblemsData } from './csharpProblems';
 
 export const handbookData = [
   guideData,
@@ -50,10 +55,15 @@ export const handbookData = [
   distributedData,
   testingData,
   observabilityData,
+  loggingContent,
+  performanceContent,
   devopsData,
   systemDesignData,
   frontendData,
   codingTasks,
+  problemSolvingData,
+  algorithmsData,
+  csharpProblemsData,
   scenariosData,
   leadershipData,
   questionBankData,
@@ -84,10 +94,15 @@ export {
   distributedData,
   testingData,
   observabilityData,
-  frontendData,
-  systemDesignData,
+  loggingContent,
+  performanceContent,
   devopsData,
+  systemDesignData,
+  frontendData,
   codingTasks,
+  problemSolvingData,
+  algorithmsData,
+  csharpProblemsData,
   scenariosData,
   leadershipData,
   questionBankData,

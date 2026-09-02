@@ -1,14 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: "Inter", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Hind Siliguri", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+  --font-bengali: "Noto Sans Bengali", "Hind Siliguri", ui-sans-serif, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
   --color-brand-bg: #F8FAFC;
   --color-brand-sidebar: #FFFFFF;
-  --color-brand-cyan: #4F46E5;
-  --color-brand-teal: #6366F1;
+  --color-brand-cyan: #0d9488;
+  --color-brand-teal: #14b8a6;
   --color-brand-text: #334155;
 
   /* Basic colors as HEX */
@@ -16,7 +18,7 @@
   --color-black: #000000;
 
   /* Subtle background colors to avoid color-mix(oklab) for PDF generation */
-  --color-brand-cyan-subtle: #f5f3ff;
+  --color-brand-cyan-subtle: #f0fdfa;
   --color-emerald-subtle: #ecfdf5;
   --color-red-subtle: #fef2f2;
   --color-slate-subtle: #f8fafc;
@@ -380,5 +382,76 @@
 }
 
 .markdown-body ul {
-  @apply list-disc list-inside space-y-2 my-4 text-sm text-slate-600;
+  @apply list-disc list-inside space-y-2 my-4 text-base text-slate-600;
+}
+
+/* Handbook typography scale */
+.text-handbook-h1 {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+}
+
+.text-handbook-h2 {
+  @apply text-2xl font-semibold tracking-tight text-slate-900;
+}
+
+.text-handbook-h3 {
+  @apply text-xl font-semibold text-slate-900;
+}
+
+.text-handbook-h4 {
+  @apply text-lg font-medium text-slate-800;
+}
+
+.font-bengali {
+  font-family: var(--font-bengali);
+}
+
+.handbook-prose {
+  @apply text-base leading-7 text-slate-700;
+}
+
+.handbook-prose h2 {
+  @apply text-xl font-semibold text-slate-900 mt-6 mb-3;
+}
+
+.handbook-prose h3 {
+  @apply text-lg font-medium text-slate-800 mt-4 mb-2;
+}
+
+.handbook-prose p {
+  @apply mb-3;
+}
+
+.handbook-prose table {
+  @apply w-full border-collapse my-4 text-sm;
+}
+
+.handbook-prose th {
+  @apply bg-slate-50 border border-slate-200 p-3 text-left font-bold text-slate-700 text-xs uppercase;
+}
+
+.handbook-prose td {
+  @apply border border-slate-100 p-3 text-slate-600;
+}
+
+.handbook-prose pre {
+  @apply bg-slate-900 text-indigo-100 p-4 rounded-lg overflow-x-auto font-mono text-sm my-4;
+}
+
+.handbook-prose code:not(pre code) {
+  @apply bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-sm;
+}
+
+.diagram-block svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prism token colors on dark code blocks */
+pre[class*="language-"] {
+  @apply bg-transparent m-0 p-0;
+}
+
+code[class*="language-"] {
+  @apply text-sm leading-relaxed;
 }
